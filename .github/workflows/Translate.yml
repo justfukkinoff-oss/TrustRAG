@@ -31,6 +31,8 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+          # Flutter 3.50 requires Gradle 9.3.1; Android still uses Gradle 8.14.
+          flutter-version: '3.44.0'
 
       - uses: dtolnay/rust-toolchain@stable
         with:
