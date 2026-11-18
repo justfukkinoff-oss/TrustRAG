@@ -347,72 +347,72 @@ pub async fn generate_report(pool: &DbPool) -> anyhow::Result<ReviewReportData> 
 
 pub fn report_to_markdown(report: &ReviewReportData) -> String {
     let mut md = String::new();
-    md.push_str("# TrustRAG 审核报告 / Review Report\n\n");
+    md.push_str("# TrustRAG Review Report\n\n");
     md.push_str(&format!("> Generated: {}\n\n", report.generated_at));
     md.push_str("---\n\n");
 
-    md.push_str("## 概览 / Overview\n\n");
-    md.push_str("| 指标 / Metric | 值 / Value |\n");
+    md.push_str("## Overview\n\n");
+    md.push_str("| Metric | Value |\n");
     md.push_str("|---|---|\n");
     md.push_str(&format!(
-        "| 总引用数 / Total Citations | {} |\n",
+        "| Total Citations | {} |\n",
         report.stats.total_citations
     ));
     md.push_str(&format!(
-        "| 已审核 / Reviewed | {} |\n",
+        "| Reviewed | {} |\n",
         report.stats.total_citations - report.stats.unreviewed
     ));
     md.push_str(&format!(
-        "| 未审核 / Unreviewed | {} |\n",
+        "| Unreviewed | {} |\n",
         report.stats.unreviewed
     ));
     md.push_str(&format!(
-        "| 审核覆盖率 / Review Coverage | {:.1}% |\n",
+        "| Review Coverage | {:.1}% |\n",
         report.review_coverage
     ));
     md.push_str("\n");
 
-    md.push_str("## 审核结果分布 / Review Results\n\n");
-    md.push_str("| 状态 / Status | 数量 / Count | 占比 / Rate |\n");
+    md.push_str("## Review Results\n\n");
+    md.push_str("| Status | Count | Rate |\n");
     md.push_str("|---|---|---|\n");
     md.push_str(&format!(
-        "| ✅ 通过 / Approved | {} | {:.1}% |\n",
+        "| ✅ Approved | {} | {:.1}% |\n",
         report.stats.approved, report.approval_rate
     ));
     md.push_str(&format!(
-        "| ❌ 拒绝 / Rejected | {} | {:.1}% |\n",
+        "| ❌ Rejected | {} | {:.1}% |\n",
         report.stats.rejected, report.rejection_rate
     ));
     md.push_str(&format!(
-        "| ⚠️ 存疑 / Flagged | {} | {:.1}% |\n",
+        "| ⚠️ Flagged | {} | {:.1}% |\n",
         report.stats.flagged,
         if (report.stats.approved + report.stats.rejected + report.stats.flagged + report.stats.pending) > 0 {
             (report.stats.flagged as f64 / (report.stats.approved + report.stats.rejected + report.stats.flagged + report.stats.pending) as f64) * 100.0
         } else { 0.0 }
     ));
     md.push_str(&format!(
-        "| ⏳ 待定 / Pending | {} | - |\n",
+        "| ⏳ Pending | {} | - |\n",
         report.stats.pending
     ));
     md.push_str("\n");
 
-    md.push_str("## 关键指标 / Key Metrics\n\n");
+    md.push_str("## Key Metrics\n\n");
     md.push_str(&format!(
-        "- **幻觉率 / Hallucination Rate**: {:.1}% (rejected + flagged / reviewed)\n",
+        "- **Hallucination Rate**: {:.1}% (rejected + flagged / reviewed)\n",
         report.hallucination_rate
     ));
     md.push_str(&format!(
-        "- **审核覆盖率 / Review Coverage**: {:.1}%\n",
+        "- **Review Coverage**: {:.1}%\n",
         report.review_coverage
     ));
     md.push_str(&format!(
-        "- **通过率 / Approval Rate**: {:.1}%\n\n",
+        "- **Approval Rate**: {:.1}%\n\n",
         report.approval_rate
     ));
 
     if !report.recent_reviews.is_empty() {
         md.push_str("---\n\n");
-        md.push_str("## 审核明细 / Review Details\n\n");
+        md.push_str("## Review Details\n\n");
         for (i, r) in report.recent_reviews.iter().enumerate() {
             let status_icon = match r.status.as_str() {
                 "approved" => "✅",
@@ -423,13 +423,13 @@ pub fn report_to_markdown(report: &ReviewReportData) -> String {
             };
             md.push_str(&format!("### {}. {} {}\n\n", i + 1, status_icon, r.status));
             if let Some(ref title) = r.document_title {
-                md.push_str(&format!("- **文档 / Document**: {}\n", title));
+                md.push_str(&format!("- **Document**: {}\n", title));
             }
             if let Some(ref heading) = r.heading_path {
-                md.push_str(&format!("- **章节 / Section**: {}\n", heading));
+                md.push_str(&format!("- **Section**: {}\n", heading));
             }
             if let Some(page) = r.page_number {
-                md.push_str(&format!("- **页码 / Page**: {}\n", page));
+                md.push_str(&format!("- **Page**: {}\n", page));
             }
             if let Some(ref text) = r.quoted_text {
                 let truncated = if text.len() > 200 {
@@ -437,15 +437,15 @@ pub fn report_to_markdown(report: &ReviewReportData) -> String {
                 } else {
                     text.clone()
                 };
-                md.push_str(&format!("- **引用 / Quote**: {}\n", truncated));
+                md.push_str(&format!("- **Quote**: {}\n", truncated));
             }
             if let Some(ref comment) = r.comment {
-                md.push_str(&format!("- **备注 / Comment**: {}\n", comment));
+                md.push_str(&format!("- **Comment**: {}\n", comment));
             }
             if let Some(ref corrected) = r.corrected_text {
-                md.push_str(&format!("- **修正 / Correction**: {}\n", corrected));
+                md.push_str(&format!("- **Correction**: {}\n", corrected));
             }
-            md.push_str(&format!("- **时间 / Time**: {}\n\n", r.created_at));
+            md.push_str(&format!("- **Time**: {}\n\n", r.created_at));
         }
     }
 

@@ -106,7 +106,20 @@ Rules:
 4. If the reference materials don't contain relevant information, explicitly state "Based on the provided materials, I cannot answer this question"
 5. Do not fabricate, speculate, or use knowledge outside the reference materials
 6. If uncertain about accuracy, use qualifiers like "According to Source [X]"
-7. Each sentence should cite at most 3 sources"#;
+7. Each sentence should cite at most 3 sources
+8. Answer in the language of the user's question unless they request another language"#;
+
+fn uses_chinese(language: &str) -> bool {
+    language.starts_with("zh") || language == "chinese"
+}
+
+fn no_sources_message(language: &str) -> &'static str {
+    if uses_chinese(language) {
+        "根据提供的资料，我无法找到与您问题相关的信息。请尝试上传更多文档或调整问题。"
+    } else {
+        "I couldn't find information relevant to your question in the available sources. Try uploading more documents or rephrasing your question."
+    }
+}
 
 pub fn build_prompt(
     query: &str,
@@ -114,7 +127,7 @@ pub fn build_prompt(
     history: &[LlmMessage],
     language: &str,
 ) -> Vec<LlmMessage> {
-    let system_prompt = if language.starts_with("zh") || language == "chinese" {
+    let system_prompt = if uses_chinese(language) {
         SYSTEM_PROMPT_ZH
     } else {
         SYSTEM_PROMPT_EN
@@ -130,10 +143,11 @@ pub fn build_prompt(
         messages.push(msg.clone());
     }
 
-    let user_content = format!(
-        "参考资料：\n{}\n\n用户问题：{}",
-        context, query
-    );
+    let user_content = if uses_chinese(language) {
+        format!("参考资料：\n{context}\n\n用户问题：{query}")
+    } else {
+        format!("Reference materials:\n{context}\n\nQuestion: {query}")
+    };
 
     messages.push(LlmMessage {
         role: "user".to_string(),
@@ -146,7 +160,7 @@ pub fn build_prompt(
 pub fn build_chitchat_prompt(query: &str, history: &[LlmMessage]) -> Vec<LlmMessage> {
     let mut messages = vec![LlmMessage {
         role: "system".to_string(),
-        content: "你是 TrustRAG 知识助手。请友好地回复用户。如果用户有文档相关问题，请提示他们可以上传文档后进行提问。".to_string(),
+        content: "You are the TrustRAG knowledge assistant. Respond in the user's language. If the user has a question about documents, let them know they can upload documents and then ask about them.".to_string(),
     }];
 
     let history_limit = history.len().min(4);
@@ -186,7 +200,7 @@ impl Default for RagConfig {
             search_mode: SearchMode::Hybrid,
             temperature: 0.1,
             max_tokens: 4096,
-            language: "zh".to_string(),
+            language: "en".to_string(),
             rerank: crate::services::reranker::ReRankConfig::default(),
             query_expansion: false,
         }
@@ -267,7 +281,7 @@ pub async fn run_rag_pipeline(
 
     if pipeline_output.sources.is_empty() {
         return Ok(RagResponse {
-            answer: "根据提供的资料，我无法找到与您问题相关的信息。请尝试上传更多文档或调整问题。".to_string(),
+            answer: no_sources_message(&config.language).to_string(),
             sources: vec![],
             prompt_tokens: 0,
             completion_tokens: 0,
@@ -335,11 +349,10 @@ pub async fn run_rag_pipeline_stream(
     ).await?;
 
     if pipeline_output.sources.is_empty() {
-        let _ = tx.send(StreamEvent::Delta(
-            "根据提供的资料，我无法找到与您问题相关的信息。请尝试上传更多文档或调整问题。".to_string(),
-        )).await;
+        let content = no_sources_message(&config.language).to_string();
+        let _ = tx.send(StreamEvent::Delta(content.clone())).await;
         let _ = tx.send(StreamEvent::Done(LlmResponse {
-            content: "根据提供的资料，我无法找到与您问题相关的信息。".to_string(),
+            content,
             prompt_tokens: 0,
             completion_tokens: 0,
             model: llm_provider.model_name().to_string(),
@@ -476,6 +489,7 @@ mod tests {
     fn test_build_prompt_english() {
         let messages = build_prompt("What is RAG?", "some context", &[], "en");
         assert!(messages[0].content.contains("reference materials"));
+        assert_eq!(messages[1].content, "Reference materials:\nsome context\n\nQuestion: What is RAG?");
     }
 
     #[test]
@@ -492,7 +506,8 @@ mod tests {
         assert_eq!(config.max_context_chars, 12000);
         assert_eq!(config.search_top_k, 10);
         assert_eq!(config.temperature, 0.1);
-        assert_eq!(config.language, "zh");
+        assert_eq!(config.language, "en");
+        assert!(no_sources_message(&config.language).contains("available sources"));
     }
 
     #[test]

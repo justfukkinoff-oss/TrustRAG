@@ -58,7 +58,7 @@ jobs:
 
       - name: Test English localization
         working-directory: apps/client
-        run: flutter test test/i18n_test.dart test/english_onboarding_test.dart
+        run: flutter test test/i18n_test.dart test/english_onboarding_test.dart test/chat_page_responsive_test.dart
 
       - name: Build debug APK
         working-directory: apps/client

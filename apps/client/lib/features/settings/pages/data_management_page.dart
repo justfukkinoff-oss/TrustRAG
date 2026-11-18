@@ -18,6 +18,7 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
   Map<String, dynamic>? _dbInfo;
   bool _loading = false;
   String? _lastMessage;
+  bool _lastMessageIsError = false;
 
   @override
   void initState() {
@@ -39,6 +40,7 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
         _dbInfo = null;
         _loading = false;
         _lastMessage = 'Unable to obtain database information: $e';
+        _lastMessageIsError = true;
       });
     }
   }
@@ -52,11 +54,13 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
       setState(() {
         _loading = false;
         _lastMessage = 'Backup successful: $path';
+        _lastMessageIsError = false;
       });
     } catch (e) {
       setState(() {
         _loading = false;
         _lastMessage = 'Backup failed: $e';
+        _lastMessageIsError = true;
       });
     }
   }
@@ -109,6 +113,7 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
       setState(() {
         _loading = false;
         _lastMessage = 'The database has been reset. Please log in again.';
+        _lastMessageIsError = false;
       });
       if (mounted) {
         ref.read(authProvider.notifier).logout(clearData: true);
@@ -117,6 +122,7 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
       setState(() {
         _loading = false;
         _lastMessage = 'Reset failed: $e';
+        _lastMessageIsError = true;
       });
     }
   }
@@ -205,6 +211,7 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
       setState(() {
         _loading = false;
         _lastMessage = 'All account data has been cleared.';
+        _lastMessageIsError = false;
       });
       if (mounted) {
         ref.read(authProvider.notifier).logout();
@@ -213,7 +220,8 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
     } catch (e) {
       setState(() {
         _loading = false;
-        _lastMessage = 'Clear failed: $e';
+        _lastMessage = 'Could not clear account data: $e';
+        _lastMessageIsError = true;
       });
     }
   }
@@ -226,12 +234,14 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
       final valid = resp.data['valid'] == true;
       setState(() {
         _loading = false;
-        _lastMessage = valid ? 'Token is valid and user status is normal' : 'The token is invalid or the user does not exist. It is recommended to log in again.';
+        _lastMessage = valid ? 'Your session is valid' : 'Your session is invalid. Please sign in again.';
+        _lastMessageIsError = !valid;
       });
     } catch (e) {
       setState(() {
         _loading = false;
         _lastMessage = 'Token verification failed: $e';
+        _lastMessageIsError = true;
       });
     }
   }
@@ -256,12 +266,12 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
                       width: double.infinity,
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: _lastMessage!.contains('failed') || _lastMessage!.contains('invalid')
+                        color: _lastMessageIsError
                             ? Colors.red.shade50
                             : Colors.green.shade50,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: _lastMessage!.contains('failed') || _lastMessage!.contains('invalid')
+                          color: _lastMessageIsError
                               ? Colors.red.shade200
                               : Colors.green.shade200,
                         ),
@@ -273,7 +283,7 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
                               _lastMessage!,
                               style: TextStyle(
                                 fontSize: 13,
-                                color: _lastMessage!.contains('failed') || _lastMessage!.contains('invalid')
+                                color: _lastMessageIsError
                                     ? Colors.red.shade800
                                     : Colors.green.shade800,
                               ),
