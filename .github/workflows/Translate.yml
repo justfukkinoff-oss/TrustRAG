@@ -1,14 +1,52 @@
-jobs: "on push"
-name: "Google"
-runs-on: "ubuntu-latest"
-steps:
- - uses: "actions/checkout@v7"
- - uses: "fabasoad/translation-action@v4"
-   id: "google-step"
-   with:
-          provider: "google"
-          lang: "zh|en"
-          source: "Kemenangan"
- - name: "Print the result"
-    run: "echo Translation is '${{ steps.google-step.outputs.text }}'"
- 
+import os
+import xml.etree.ElementTree as ET
+from deep_translator import GoogleTranslator
+
+def translate_text(text):
+    if not text or not text.strip():
+        return text
+    try:
+        # Translate from Chinese (auto-detects simplified/traditional) to English
+        translated = GoogleTranslator(source='zh', target='en').translate(text)
+        return translated if translated else text
+    except Exception as e:
+        print(f"Translation error for text '{text}': {e}")
+        return text
+
+def process_strings_file(file_path):
+    print(f"Processing: {file_path}")
+    tree = ET.parse(file_path)
+    root = tree.getroot()
+
+    for elem in root.findall('.//string'):
+        if elem.text:
+            original = elem.text
+            translated = translate_text(original)
+            elem.text = translated
+            print(f"Translated: '{original}' -> '{translated}'")
+
+    # Handle string arrays if present
+    for array in root.findall('.//string-array'):
+        for item in array.findall('item'):
+            if item.text:
+                original = item.text
+                translated = translate_text(original)
+                item.text = translated
+
+    tree.write(file_path, encoding='utf-8', xml_declaration=True)
+
+def main():
+    # Walk through the repo to find Android strings.xml files
+    for root, dirs, files in os.walk('.'):
+        if '.git' in root:
+            continue
+        for file in files:
+            if file == 'strings.xml':
+                file_path = os.path.join(root, file)
+                # Skip English or backup folders if needed
+                if 'values-en' in file_path:
+                    continue
+                process_strings_file(file_path)
+
+if __name__ == '__main__':
+    main()
