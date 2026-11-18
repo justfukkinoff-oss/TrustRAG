@@ -42,7 +42,11 @@ class ApiClient {
 
     dio.interceptors.add(_DebugLogInterceptor());
 
-    final cacheStore = MemCacheStore(maxSize: 50, maxEntrySize: 524288);
+    // Both limits are in bytes. The total must hold at least five max-size entries.
+    final cacheStore = MemCacheStore(
+      maxSize: 7 * 1024 * 1024,
+      maxEntrySize: 512 * 1024,
+    );
     final cacheOptions = CacheOptions(
       store: cacheStore,
       policy: CachePolicy.request,
