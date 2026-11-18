@@ -44,7 +44,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       setState(() => _isLoading = false);
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('注册成功')),
+          const SnackBar(content: Text('Registration successful')),
         );
         context.go('/dashboard');
       }
@@ -73,7 +73,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  '创建账号',
+                  'Create account',
                   style: theme.textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -87,23 +87,23 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                       TextFormField(
                         controller: _nameController,
                         decoration: const InputDecoration(
-                          labelText: '用户名',
+                          labelText: 'Username',
                           prefixIcon: Icon(Icons.person_outlined),
                         ),
                         validator: (v) =>
-                            (v == null || v.isEmpty) ? '请输入用户名' : null,
+                            (v == null || v.isEmpty) ? 'Please enter username' : null,
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: _emailController,
                         decoration: const InputDecoration(
-                          labelText: '邮箱',
+                          labelText: 'Email',
                           prefixIcon: Icon(Icons.email_outlined),
                         ),
                         keyboardType: TextInputType.emailAddress,
                         validator: (v) {
-                          if (v == null || v.isEmpty) return '请输入邮箱';
-                          if (!v.contains('@')) return '请输入有效邮箱';
+                          if (v == null || v.isEmpty) return 'Please enter your email';
+                          if (!v.contains('@')) return 'Please enter a valid email address';
                           return null;
                         },
                       ),
@@ -111,7 +111,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                       TextFormField(
                         controller: _passwordController,
                         decoration: InputDecoration(
-                          labelText: '密码',
+                          labelText: 'Password',
                           prefixIcon: const Icon(Icons.lock_outlined),
                           suffixIcon: IconButton(
                             icon: Icon(
@@ -125,8 +125,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                         ),
                         obscureText: _obscurePassword,
                         validator: (v) {
-                          if (v == null || v.isEmpty) return '请输入密码';
-                          if (v.length < 8) return '密码至少 8 个字符';
+                          if (v == null || v.isEmpty) return 'Please enter password';
+                          if (v.length < 8) return 'Password must be at least 8 characters';
                           return null;
                         },
                       ),
@@ -134,12 +134,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                       TextFormField(
                         controller: _confirmController,
                         decoration: const InputDecoration(
-                          labelText: '确认密码',
+                          labelText: 'Confirm password',
                           prefixIcon: Icon(Icons.lock_outlined),
                         ),
                         obscureText: _obscurePassword,
                         validator: (v) =>
-                            v != _passwordController.text ? '两次密码不一致' : null,
+                            v != _passwordController.text ? 'Two passwords are inconsistent' : null,
                       ),
                     ],
                   ),
@@ -171,16 +171,16 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                             color: Colors.white,
                           ),
                         )
-                      : const Text('注册'),
+                      : const Text('Register'),
                 ),
                 const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('已有账号？'),
+                    const Text('Already have an account?'),
                     TextButton(
                       onPressed: () => context.go('/login'),
-                      child: const Text('登录'),
+                      child: const Text('Login'),
                     ),
                   ],
                 ),

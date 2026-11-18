@@ -44,7 +44,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           await bm.start(accountId: 'local@trustrag.desktop');
           await bm.ready;
           if (bm.hasFailed) {
-            throw Exception(bm.startupError ?? '本地后端启动失败');
+            throw Exception(bm.startupError ?? 'Local backend startup failed');
           }
         }
 
@@ -70,7 +70,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   Future<void> _testConnection() async {
     final url = _urlController.text.trim();
     if (url.isEmpty) {
-      setState(() => _connectionError = '请输入服务器地址');
+      setState(() => _connectionError = 'Enter the server address');
       return;
     }
 
@@ -90,23 +90,23 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
       if (resp.statusCode == 200) {
         setState(() => _connectionOk = true);
       } else {
-        setState(() => _connectionError = '服务器返回异常状态码: ${resp.statusCode}');
+        setState(() => _connectionError = 'Unexpected server status: ${resp.statusCode}');
       }
     } on DioException catch (e) {
       String msg;
       switch (e.type) {
         case DioExceptionType.connectionTimeout:
-          msg = '连接超时，请检查地址和网络';
+          msg = 'Connection timed out, please check address and network';
           break;
         case DioExceptionType.connectionError:
-          msg = '无法连接服务器，请检查地址是否正确';
+          msg = 'Unable to connect to the server, please check if the address is correct';
           break;
         default:
-          msg = e.message ?? '连接失败';
+          msg = e.message ?? 'Connection failed';
       }
       setState(() => _connectionError = msg);
     } catch (e) {
-      setState(() => _connectionError = '连接失败: $e');
+      setState(() => _connectionError = 'Connection failed: $e');
     } finally {
       if (mounted) setState(() => _testingConnection = false);
     }
@@ -150,12 +150,12 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '可信赖的 RAG 知识工作台',
+                  'Trustworthy RAG knowledge workbench',
                   style: theme.textTheme.bodyLarge?.copyWith(color: Colors.grey),
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  '选择你的使用方式',
+                  'Choose how you use it',
                   style: theme.textTheme.titleMedium,
                 ),
                 const SizedBox(height: 32),
@@ -164,9 +164,9 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                   _buildModeCard(
                     theme: theme,
                     icon: Icons.computer_rounded,
-                    title: '本地使用',
-                    subtitle: '数据保存在本地，无需服务器',
-                    badges: const ['零配置', '离线可用', '隐私保护'],
+                    title: 'Local mode',
+                    subtitle: 'Data is saved locally, no server required',
+                    badges: const ['Zero configuration', 'Available offline', 'Privacy protection'],
                     recommended: true,
                     isLoading: _startingLocal,
                     error: _localError,
@@ -178,9 +178,9 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                 _buildModeCard(
                   theme: theme,
                   icon: Icons.cloud_rounded,
-                  title: '连接服务器',
-                  subtitle: '连接远程服务器，支持团队协作',
-                  badges: const ['多用户', '数据同步', '团队协作'],
+                  title: 'Connect to a server',
+                  subtitle: 'Connect to remote servers to support team collaboration',
+                  badges: const ['multiple users', 'Data synchronization', 'Teamwork'],
                   recommended: !showEmbedded,
                   isLoading: false,
                   onTap: () => setState(() => _showServerForm = !_showServerForm),
@@ -246,7 +246,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                                   color: theme.colorScheme.primary.withValues(alpha: 0.15),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: Text('推荐', style: TextStyle(
+                                child: Text('Recommended', style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
                                   color: theme.colorScheme.primary,
@@ -311,7 +311,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('服务器地址', style: theme.textTheme.titleSmall),
+            Text('Server address', style: theme.textTheme.titleSmall),
             const SizedBox(height: 8),
             TextField(
               controller: _urlController,
@@ -339,7 +339,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                         ? const SizedBox(width: 16, height: 16,
                             child: CircularProgressIndicator(strokeWidth: 2))
                         : const Icon(Icons.wifi_find, size: 18),
-                    label: const Text('测试连接'),
+                    label: const Text('Test connection'),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -347,7 +347,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                   child: FilledButton.icon(
                     onPressed: _connectionOk ? _confirmServerMode : null,
                     icon: const Icon(Icons.check, size: 18),
-                    label: const Text('确认'),
+                    label: const Text('Confirm'),
                   ),
                 ),
               ],
@@ -358,7 +358,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                 children: [
                   Icon(Icons.check_circle, color: Colors.green.shade400, size: 18),
                   const SizedBox(width: 6),
-                  Text('连接成功', style: TextStyle(color: Colors.green.shade400, fontSize: 13)),
+                  Text('Connection successful', style: TextStyle(color: Colors.green.shade400, fontSize: 13)),
                 ],
               ),
             ],

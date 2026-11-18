@@ -86,7 +86,7 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
       }
       if (mounted && successCount > 0) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('成功上传 $successCount 个文件')),
+          SnackBar(content: Text('Successfully uploaded $successCount files')),
         );
       }
     }
@@ -100,17 +100,17 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('批量删除'),
-        content: Text('确认删除 ${_selectedIds.length} 个文档？此操作不可恢复。'),
+        title: const Text('Batch delete'),
+        content: Text('Are you sure you want to delete ${_selectedIds.length} documents? This operation is irreversible.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('取消'),
+            child: const Text('Cancel'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: FilledButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('删除'),
+            child: const Text('Delete'),
           ),
         ],
       ),
@@ -127,7 +127,7 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
     });
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('批量删除完成')),
+        const SnackBar(content: Text('Batch deletion completed')),
       );
     }
   }
@@ -140,7 +140,7 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
 
     if (ws == null) {
       return Center(
-        child: Text('请先选择工作区', style: TextStyle(color: Colors.grey.shade500)),
+        child: Text('Select a workspace first', style: TextStyle(color: Colors.grey.shade500)),
       );
     }
 
@@ -159,7 +159,7 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('资料库',
+                      Text('Knowledge base',
                           style: Theme.of(context)
                               .textTheme
                               .titleLarge
@@ -177,13 +177,13 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
               ),
               const Spacer(),
               if (_selectionMode) ...[
-                Text('已选 ${_selectedIds.length} 项',
+                Text('${_selectedIds.length} item selected',
                     style: TextStyle(color: Colors.grey.shade600)),
                 const SizedBox(width: 12),
                 OutlinedButton.icon(
                   onPressed: _batchDelete,
                   icon: const Icon(Icons.delete_outline, size: 18, color: Colors.red),
-                  label: const Text('批量删除', style: TextStyle(color: Colors.red)),
+                  label: const Text('Batch delete', style: TextStyle(color: Colors.red)),
                 ),
                 const SizedBox(width: 8),
                 TextButton(
@@ -191,25 +191,25 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
                     _selectionMode = false;
                     _selectedIds.clear();
                   }),
-                  child: const Text('取消'),
+                  child: const Text('Cancel'),
                 ),
               ] else ...[
                 OutlinedButton.icon(
                   onPressed: () => setState(() => _selectionMode = true),
                   icon: const Icon(Icons.checklist, size: 18),
-                  label: const Text('选择'),
+                  label: const Text('Choose'),
                 ),
                 const SizedBox(width: 8),
                 FilledButton.icon(
                   onPressed: _uploadFile,
                   icon: const Icon(Icons.upload_file, size: 18),
-                  label: const Text('上传文档'),
+                  label: const Text('Upload documents'),
                 ),
                 if (_isDesktopEmbedded) ...[
                   const SizedBox(width: 8),
                   Tooltip(
-                    message: '桌面模式支持 PDF/TXT/MD/HTML/DOCX 本地解析\n'
-                        '扫描版 PDF 需要 OCR 支持',
+                    message: 'Desktop mode supports PDF/TXT/MD/HTML/DOCX local parsing \n'
+                        'Scanned PDF requires OCR support',
                     child: Icon(Icons.info_outline,
                         size: 18, color: Colors.blue.shade600),
                   ),
@@ -221,7 +221,7 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
         Expanded(
           child: docs.when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, _) => Center(child: Text('加载失败: $e')),
+            error: (e, _) => Center(child: Text('Loading failed: $e')),
             data: (allDocs) {
               _startAutoRefresh(allDocs);
               final folders = _extractFolders(allDocs);
@@ -236,7 +236,7 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
                       Icon(Icons.upload_file,
                           size: 80, color: Colors.grey.shade300),
                       const SizedBox(height: 16),
-                      Text('暂无文档',
+                      Text('No document yet',
                           style: Theme.of(context)
                               .textTheme
                               .headlineSmall
@@ -244,8 +244,8 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
                       const SizedBox(height: 8),
                       Text(
                           _isDesktopEmbedded
-                              ? '点击"上传文档"添加 PDF、DOCX、TXT、MD 或 HTML 文件'
-                              : '点击"上传文档"添加 PDF、DOCX 或 TXT 文件',
+                              ? 'Click "Upload Document" to add PDF, DOCX, TXT, MD or HTML files'
+                              : 'Click "Upload Document" to add a PDF, DOCX or TXT file',
                           style: TextStyle(color: Colors.grey.shade500)),
                       if (_isDesktopEmbedded) ...[
                         const SizedBox(height: 12),
@@ -267,8 +267,8 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
                               const SizedBox(width: 8),
                               Flexible(
                                 child: Text(
-                                  '桌面模式支持 PDF/TXT/MD/HTML 本地解析。'
-                                  '扫描版 PDF 和图片型 PDF 暂需 OCR 支持',
+                                  'Desktop mode supports PDF/TXT/MD/HTML local parsing.'
+                                  'Scanned PDF and image PDF temporarily require OCR support',
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: Colors.blue.shade800,
@@ -290,7 +290,7 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
                   if (_activeFolder != null && list.isEmpty)
                     Expanded(
                       child: Center(
-                        child: Text('文件夹 "$_activeFolder" 中暂无文档',
+                        child: Text('There are no documents in the folder "$_activeFolder"',
                             style: TextStyle(color: Colors.grey.shade500)),
                       ),
                     )
@@ -360,7 +360,7 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
                               ],
                               if (doc.chunkCount != null) ...[
                                 const SizedBox(width: 12),
-                                Text('${doc.chunkCount} 分块',
+                                Text('${doc.chunkCount} chunking',
                                     style: TextStyle(
                                         color: Colors.grey.shade600, fontSize: 12)),
                               ],
@@ -389,7 +389,7 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
                             Padding(
                               padding: const EdgeInsets.only(top: 4),
                               child: Text(
-                                '文档文本已解析，但向量化失败，暂不可用于问答检索。${doc.processingError != null ? "\n${doc.processingError}" : ""}',
+                                'The document text has been parsed, but vectorization failed and cannot be used for question and answer retrieval. ${doc.processingError != null ? "\n${doc.processingError}" : ""}',
                                 maxLines: 3,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(fontSize: 11, color: Colors.orange.shade700),
@@ -409,8 +409,8 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
                             Padding(
                               padding: const EdgeInsets.only(top: 4),
                               child: Text(
-                                '处理时间较长，文件可能过大或后端任务已中断。'
-                                '可点击右侧菜单「重新处理」重试。',
+                                'Processing time is long, the file may be too large, or the backend task may have been interrupted.'
+                                'You can click "Reprocess" on the right menu to try again.',
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(fontSize: 11, color: Colors.orange.shade700),
@@ -422,19 +422,19 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
                         itemBuilder: (ctx) => [
                           if (doc.processingStatus == 'ready')
                             const PopupMenuItem(
-                                value: 'generate_graph', child: Text('生成知识图谱')),
+                                value: 'generate_graph', child: Text('Generate knowledge graph')),
                           if (doc.isStale || doc.processingStatus == 'failed' || doc.processingStatus == 'embedding_failed')
                             const PopupMenuItem(
                                 value: 'reprocess',
-                                child: Text('重新处理')),
+                                child: Text('reprocess')),
                           if (doc.isProcessing)
                             const PopupMenuItem(
                                 value: 'cancel',
-                                child: Text('取消处理')),
+                                child: Text('Cancel processing')),
                           const PopupMenuItem(
-                              value: 'move_folder', child: Text('移动到文件夹')),
+                              value: 'move_folder', child: Text('Move to folder')),
                           const PopupMenuItem(
-                              value: 'delete', child: Text('删除')),
+                              value: 'delete', child: Text('Delete')),
                         ],
                         onSelected: (value) async {
                           if (value == 'delete') {
@@ -452,8 +452,8 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                 content: Text(ok
-                                    ? '已重新触发文档处理: ${doc.originalFilename}'
-                                    : '重新处理失败，请稍后重试'),
+                                    ? 'Document processing retriggered: ${doc.originalFilename}'
+                                    : 'Reprocessing failed, please try again later'),
                                 backgroundColor: ok ? null : Colors.red,
                               ));
                             }
@@ -463,7 +463,7 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
                                 .reprocessDocument(ws.id, doc.id);
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content: Text(ok ? '已取消处理' : '取消失败'),
+                                content: Text(ok ? 'Processing canceled' : 'Cancellation failed'),
                               ));
                             }
                           }
@@ -489,7 +489,7 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
       data: (list) {
         if (list.length <= 1) return const SizedBox.shrink();
         return PopupMenuButton<String>(
-          tooltip: '切换工作区/资料库',
+          tooltip: 'Switch workspace/library',
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
@@ -501,7 +501,7 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
               children: [
                 Icon(Icons.swap_horiz, size: 16, color: Theme.of(context).colorScheme.primary),
                 const SizedBox(width: 4),
-                Text('切换', style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.primary)),
+                Text('switch', style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.primary)),
               ],
             ),
           ),
@@ -596,7 +596,7 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  _folderChip('全部', null),
+                  _folderChip('All', null),
                   ...sortedFolders.map((f) => _folderChip(f, f)),
                 ],
               ),
@@ -605,7 +605,7 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
           const SizedBox(width: 8),
           IconButton(
             icon: const Icon(Icons.create_new_folder_outlined, size: 18),
-            tooltip: '新建文件夹',
+            tooltip: 'Create new folder',
             onPressed: () => _showCreateFolderDialog(ws),
             visualDensity: VisualDensity.compact,
           ),
@@ -633,21 +633,21 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
     final name = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('新建文件夹'),
+        title: const Text('Create new folder'),
         content: TextField(
           controller: controller,
           autofocus: true,
           decoration: const InputDecoration(
-            hintText: '文件夹名称',
+            hintText: 'folder name',
             border: OutlineInputBorder(),
           ),
           onSubmitted: (v) => Navigator.pop(ctx, v.trim()),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('取消')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-            child: const Text('创建'),
+            child: const Text('create'),
           ),
         ],
       ),
@@ -660,7 +660,7 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
 
   Future<void> _generateGraphForDoc(String workspaceId, String docId, String filename) async {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('正在为「$filename」生成知识图谱...'), duration: const Duration(seconds: 30)),
+      SnackBar(content: Text('Generating knowledge graph for "$filename"...'), duration: const Duration(seconds: 30)),
     );
     try {
       final api = ref.read(apiClientProvider);
@@ -671,7 +671,7 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
         final relations = resp.data['relations_created'] ?? 0;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('图谱生成完成: $entities 个实体, $relations 条关系'),
+            content: Text('Graph generated: $entities entities, $relations relationships'),
             duration: const Duration(seconds: 4),
           ),
         );
@@ -680,7 +680,7 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('图谱生成失败: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Graph generation failed: $e'), backgroundColor: Colors.red),
         );
       }
     }
@@ -694,7 +694,7 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
     final result = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('移动到文件夹'),
+        title: const Text('Move to folder'),
         content: SizedBox(
           width: 300,
           child: Column(
@@ -704,18 +704,18 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
               if (doc.tags.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
-                  child: Text('当前文件夹: ${doc.tags.join(", ")}',
+                  child: Text('Current folder: ${doc.tags.join(", ")}',
                       style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
                 ),
               if (existingFolders.isNotEmpty) ...[
-                const Text('选择已有文件夹:', style: TextStyle(fontSize: 13)),
+                const Text('Select an existing folder:', style: TextStyle(fontSize: 13)),
                 const SizedBox(height: 8),
                 Wrap(
                   spacing: 6,
                   runSpacing: 4,
                   children: [
                     ActionChip(
-                      label: const Text('无文件夹'),
+                      label: const Text('No folder'),
                       onPressed: () => Navigator.pop(ctx, '__none__'),
                     ),
                     ...existingFolders.map((f) => ActionChip(
@@ -725,14 +725,14 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                const Text('或输入新文件夹:', style: TextStyle(fontSize: 13)),
+                const Text('Or enter a new folder:', style: TextStyle(fontSize: 13)),
               ] else
-                const Text('输入文件夹名称:', style: TextStyle(fontSize: 13)),
+                const Text('Enter the folder name:', style: TextStyle(fontSize: 13)),
               const SizedBox(height: 8),
               TextField(
                 controller: controller,
                 decoration: const InputDecoration(
-                  hintText: '新文件夹名',
+                  hintText: 'New folder name',
                   border: OutlineInputBorder(),
                   isDense: true,
                 ),
@@ -742,10 +742,10 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('取消')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-            child: const Text('确定'),
+            child: const Text('OK'),
           ),
         ],
       ),
@@ -823,11 +823,11 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
   }
 
   String _formatElapsed(int ms) {
-    if (ms < 1000) return '处理用时: ${ms}ms';
+    if (ms < 1000) return 'Processing time: ${ms}ms';
     final secs = ms / 1000.0;
-    if (secs < 60) return '处理用时: ${secs.toStringAsFixed(1)}s';
+    if (secs < 60) return 'Processing time: ${secs.toStringAsFixed(1)}s';
     final mins = secs / 60.0;
-    return '处理用时: ${mins.toStringAsFixed(1)}min';
+    return 'Processing time: ${mins.toStringAsFixed(1)}min';
   }
 
   Widget _graphBadge(GraphStat? stat) {
@@ -848,7 +848,7 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
             Icon(Icons.hub, size: 11, color: Colors.teal.shade600),
             const SizedBox(width: 3),
             Text(
-              '${stat.entitiesCount}实体/${stat.relationsCount}关系',
+              '${stat.entitiesCount} entity/${stat.relationsCount} relationship',
               style: TextStyle(color: Colors.teal.shade700, fontSize: 11, fontWeight: FontWeight.w500),
             ),
           ],

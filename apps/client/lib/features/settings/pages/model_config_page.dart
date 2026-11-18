@@ -37,13 +37,13 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('模型配置'),
+        title: const Text('Model configuration'),
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
-            Tab(icon: Icon(Icons.smart_toy), text: 'LLM 模型'),
-            Tab(icon: Icon(Icons.data_array), text: '嵌入模型'),
-            Tab(icon: Icon(Icons.sort), text: 'Rerank 模型'),
+            Tab(icon: Icon(Icons.smart_toy), text: 'LLM model'),
+            Tab(icon: Icon(Icons.data_array), text: 'Embedding model'),
+            Tab(icon: Icon(Icons.sort), text: 'Rerank model'),
           ],
         ),
       ),
@@ -80,10 +80,10 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
     final configs = ref.watch(modelConfigProvider);
     return configs.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('加载失败: $e')),
+      error: (e, _) => Center(child: Text('Loading failed: $e')),
       data: (list) {
         if (list.isEmpty) {
-          return _buildEmptyState('LLM 模型', () => _showLlmDialog());
+          return _buildEmptyState('LLM model', () => _showLlmDialog());
         }
         return ListView.builder(
           padding: const EdgeInsets.all(16),
@@ -116,7 +116,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
           children: [
             IconButton(
               icon: const Icon(Icons.play_circle_outline),
-              tooltip: '测试连接',
+              tooltip: 'Test connection',
               onPressed: () => _testLlmConnection(cfg),
             ),
             IconButton(
@@ -137,7 +137,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
   Future<void> _testLlmConnection(ModelConfig cfg) async {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-          content: Text('正在测试连接...'), duration: Duration(seconds: 30)),
+          content: Text('Testing connection...'), duration: Duration(seconds: 30)),
     );
     final result = await ref
         .read(modelConfigProvider.notifier)
@@ -145,7 +145,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
     if (context.mounted) {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       final success = result['success'] == true;
-      final message = result['message'] ?? '未知结果';
+      final message = result['message'] ?? 'Unknown result';
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(message),
@@ -153,7 +153,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
           duration: const Duration(seconds: 4),
         ));
       } else {
-        _showErrorDialog('LLM 连接测试失败', message);
+        _showErrorDialog('LLM connection test failed', message);
       }
     }
   }
@@ -164,10 +164,10 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
     final configs = ref.watch(embeddingConfigProvider);
     return configs.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('加载失败: $e')),
+      error: (e, _) => Center(child: Text('Loading failed: $e')),
       data: (list) {
         if (list.isEmpty) {
-          return _buildEmptyState('嵌入模型', () => _showEmbeddingDialog());
+          return _buildEmptyState('embedding model', () => _showEmbeddingDialog());
         }
         return ListView.builder(
           padding: const EdgeInsets.all(16),
@@ -201,7 +201,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
           children: [
             IconButton(
               icon: const Icon(Icons.play_circle_outline),
-              tooltip: '测试连接',
+              tooltip: 'Test connection',
               onPressed: () => _testEmbeddingConnection(cfg),
             ),
             IconButton(
@@ -222,7 +222,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
   Future<void> _testEmbeddingConnection(EmbeddingConfig cfg) async {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-          content: Text('正在测试嵌入连接...'),
+          content: Text('Testing embedded connection...'),
           duration: Duration(seconds: 30)),
     );
     final result =
@@ -230,7 +230,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
     if (context.mounted) {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       final success = result['success'] == true;
-      final message = result['message'] ?? '未知结果';
+      final message = result['message'] ?? 'Unknown result';
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(message),
@@ -238,7 +238,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
           duration: const Duration(seconds: 4),
         ));
       } else {
-        _showErrorDialog('嵌入模型连接测试失败', message);
+        _showErrorDialog('Embed model connection test failed', message);
       }
     }
   }
@@ -249,14 +249,14 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
     final configs = ref.watch(rerankConfigProvider);
     return configs.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('加载失败: $e')),
+      error: (e, _) => Center(child: Text('Loading failed: $e')),
       data: (list) {
         if (list.isEmpty) {
           return Column(
             children: [
               _buildRerankInfoCard(),
               Expanded(
-                child: _buildEmptyState('Rerank 模型', () => _showRerankDialog()),
+                child: _buildEmptyState('Rerank model', () => _showRerankDialog()),
               ),
             ],
           );
@@ -288,7 +288,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
         child: ExpansionTile(
           leading: Icon(Icons.info_outline, color: cs.primary, size: 20),
           title: Text(
-            'Rerank 模型是什么？',
+            'What is the Rerank model?',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
@@ -300,27 +300,27 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
           children: [
             _buildInfoSection(
               icon: Icons.architecture,
-              title: '两阶段检索架构',
-              content: 'TrustRAG 使用「粗召回 + 精排序」两阶段检索：\n'
-                  '1. 嵌入模型（Embedding）负责从知识库中快速召回候选文档\n'
-                  '2. 重排模型（Rerank）对候选文档重新打分，将最相关的结果排到最前面',
+              title: 'Two-stage search architecture',
+              content: 'TrustRAG searches in two stages: retrieval and reranking.\n'
+                  '1. The embedding model quickly retrieves candidate documents from the knowledge base.\n'
+                  '2. The reranking model (Rerank) rescores the candidate documents and ranks the most relevant results to the top.',
             ),
             const SizedBox(height: 12),
             _buildInfoSection(
               icon: Icons.compare_arrows,
-              title: 'Embedding vs Rerank 区别',
-              content: 'Embedding 模型：将文本转为向量，通过向量相似度快速检索，速度快但精度有限\n'
-                  'Rerank 模型：逐对比较查询与文档的语义相关性，精度更高但速度较慢\n'
-                  '两者配合使用效果最佳：先快速召回 30 篇，再精排保留 Top 5',
+              title: 'Difference Between Embedding vs Rerank Difference',
+              content: 'Embedding model: Convert text into vectors and quickly retrieve them through vector similarity. The speed is fast but the accuracy is limited \n'
+                  'Rerank model: compares the semantic relevance of queries and documents pairwise, with higher accuracy but slower speed \n'
+                  'The best effect is achieved when the two are used together: quickly recall 30 articles first, and then fine-tune and retain the Top 5',
             ),
             const SizedBox(height: 12),
             _buildInfoSection(
               icon: Icons.lightbulb_outline,
-              title: '推荐配置',
-              content: 'Jina Reranker v2：多语言支持好，推荐中文场景使用\n'
-                  'Cohere Rerank v3.5：英文效果出色，API 稳定\n'
-                  'BAAI/bge-reranker-v2-m3：开源模型，可本地部署\n\n'
-                  '如不配置 Rerank，系统将仅使用嵌入模型检索，功能不受影响',
+              title: 'Recommended configuration',
+              content: 'Jina Reranker v2: Good multilingual support, including Chinese.\n'
+                  'Cohere Rerank v3.5: Excellent English effect, stable API \n'
+                  'BAAI/bge-reranker-v2-m3: open source model, can be deployed locally\n\n'
+                  'If no reranker is configured, search still works using the embedding model alone.',
             ),
           ],
         ),
@@ -378,19 +378,19 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
           ],
         ]),
         subtitle: Text(
-            '${cfg.provider} · 召回 ${cfg.initialRecallK} → 保留 ${cfg.topN} · ${cfg.timeoutSecs}s${cfg.fallbackEnabled ? ' · 降级' : ''}'),
+                      '${cfg.provider} · Retrieve ${cfg.initialRecallK} → Keep ${cfg.topN} · ${cfg.timeoutSecs}s${cfg.fallbackEnabled ? ' · Fallback enabled' : ''}'),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
               icon: const Icon(Icons.play_circle_outline),
-              tooltip: '测试连接',
+              tooltip: 'Test connection',
               onPressed: () => _testRerankConnection(cfg),
             ),
             if (!cfg.isDefault)
               IconButton(
                 icon: const Icon(Icons.star_outline, size: 20),
-                tooltip: '设为默认',
+                tooltip: 'Set as default',
                 onPressed: () => ref
                     .read(rerankConfigProvider.notifier)
                     .setDefault(cfg.id),
@@ -413,7 +413,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
   Future<void> _testRerankConnection(RerankConfig cfg) async {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-          content: Text('正在测试 Rerank 连接...'),
+          content: Text('Testing Rerank connection...'),
           duration: Duration(seconds: 30)),
     );
     final result =
@@ -421,7 +421,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
     if (context.mounted) {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       final success = result['success'] == true;
-      final message = result['message'] ?? '未知结果';
+      final message = result['message'] ?? 'Unknown result';
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(message),
@@ -429,7 +429,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
           duration: const Duration(seconds: 4),
         ));
       } else {
-        _showErrorDialog('Rerank 模型连接测试失败', message);
+        _showErrorDialog('Rerank model connection test failed', message);
       }
     }
   }
@@ -475,17 +475,17 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
               Clipboard.setData(ClipboardData(text: message));
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('错误信息已复制到剪贴板'),
+                  content: Text('Error message copied to clipboard'),
                   duration: Duration(seconds: 2),
                 ),
               );
             },
             icon: const Icon(Icons.copy, size: 16),
-            label: const Text('复制错误信息'),
+            label: const Text('Copy error message'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('关闭'),
+            child: const Text('close'),
           ),
         ],
       ),
@@ -501,7 +501,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
         color: Colors.green.shade100,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: const Text('默认',
+      child: const Text('Default',
           style: TextStyle(
               fontSize: 11,
               color: Colors.green,
@@ -516,7 +516,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
         children: [
           Icon(Icons.model_training, size: 80, color: Colors.grey.shade300),
           const SizedBox(height: 16),
-          Text('暂无$type配置',
+          Text('No $type configured yet',
               style: Theme.of(context)
                   .textTheme
                   .headlineSmall
@@ -525,7 +525,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
           FilledButton.icon(
             onPressed: onAdd,
             icon: const Icon(Icons.add),
-            label: Text('添加$type'),
+            label: Text('Add$type'),
           ),
         ],
       ),
@@ -559,7 +559,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          title: Text(config == null ? '添加 LLM 模型' : '编辑 LLM 模型'),
+          title: Text(config == null ? 'Add LLM model' : 'Edit LLM model'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -581,12 +581,12 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
                 TextField(
                   controller: modelCtl,
                   decoration: InputDecoration(
-                    labelText: '模型名称',
+                    labelText: 'Model name',
                     hintText: selectedProvider == 'openai'
-                        ? '如 gpt-4o, gpt-4o-mini'
+                        ? 'Such as gpt-4o, gpt-4o-mini'
                         : selectedProvider == 'ollama'
-                            ? '如 qwen2.5:7b'
-                            : '如 claude-3-5-sonnet',
+                            ? 'Such as qwen2.5:7b'
+                            : 'Such as claude-3-5-sonnet',
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -595,7 +595,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
                   decoration: InputDecoration(
                     labelText: 'API Endpoint',
                     hintText: _endpointHint(selectedProvider),
-                    helperText: '填写到 /v1 即可，无需加 /chat/completions',
+                    helperText: 'Just fill in /v1, no need to add /chat/completions',
                     helperMaxLines: 2,
                   ),
                 ),
@@ -605,16 +605,16 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
                   decoration: InputDecoration(
                     labelText: 'API Key',
                     hintText: config != null
-                        ? '留空则不修改'
+                        ? 'Leave blank to make no changes'
                         : selectedProvider == 'ollama'
-                            ? '本地无需填写'
+                            ? 'No need to fill in locally'
                             : 'sk-...',
                   ),
                   obscureText: true,
                 ),
                 const SizedBox(height: 12),
                 SwitchListTile(
-                  title: const Text('设为默认'),
+                  title: const Text('Set as default'),
                   contentPadding: EdgeInsets.zero,
                   value: isDefault,
                   onChanged: (v) => setDialogState(() => isDefault = v),
@@ -625,7 +625,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
           actions: [
             TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: const Text('取消')),
+                child: const Text('Cancel')),
             FilledButton(
               onPressed: () async {
                 final data = <String, dynamic>{
@@ -650,7 +650,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
                 }
                 if (ok && ctx.mounted) Navigator.pop(ctx);
               },
-              child: Text(config == null ? '创建' : '保存'),
+              child: Text(config == null ? 'create' : 'save'),
             ),
           ],
         ),
@@ -676,7 +676,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          title: Text(config == null ? '添加嵌入模型' : '编辑嵌入模型'),
+          title: Text(config == null ? 'Add embedding model' : 'Edit embedding model'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -698,14 +698,14 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
                 TextField(
                   controller: modelCtl,
                   decoration: InputDecoration(
-                    labelText: '模型名称',
+                    labelText: 'Model name',
                     hintText: selectedProvider == 'openai'
-                        ? '如 text-embedding-3-small'
+                        ? 'Such as text-embedding-3-small'
                         : selectedProvider == 'ollama'
-                            ? '如 nomic-embed-text'
+                            ? 'Such as nomic-embed-text'
                             : selectedProvider == 'local'
-                                ? '如 nomic-embed-text'
-                                : '如 Qwen3-Embedding-0.6B',
+                                ? 'Such as nomic-embed-text'
+                                : 'Such as Qwen3-Embedding-0.6B',
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -714,7 +714,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
                   decoration: InputDecoration(
                     labelText: 'API Endpoint',
                     hintText: _endpointHint(selectedProvider),
-                    helperText: '兼容 OpenAI /v1/embeddings 接口即可',
+                    helperText: 'Compatible with the OpenAI /v1/embeddings interface',
                     helperMaxLines: 2,
                   ),
                 ),
@@ -724,9 +724,9 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
                   decoration: InputDecoration(
                     labelText: 'API Key',
                     hintText: config != null
-                        ? '留空则不修改'
+                        ? 'Leave blank to make no changes'
                         : (selectedProvider == 'local' || selectedProvider == 'ollama')
-                            ? '本地无需填写'
+                            ? 'No need to fill in locally'
                             : 'sk-...',
                   ),
                   obscureText: true,
@@ -735,8 +735,8 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
                 TextField(
                   controller: dimensionsCtl,
                   decoration: const InputDecoration(
-                    labelText: '向量维度',
-                    helperText: 'OpenAI text-embedding-3-small 为 1536',
+                    labelText: 'vector dimensions',
+                    helperText: 'OpenAI text-embedding-3-small is 1536',
                   ),
                   keyboardType: TextInputType.number,
                 ),
@@ -744,8 +744,8 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
                 TextField(
                   controller: batchSizeCtl,
                   decoration: const InputDecoration(
-                    labelText: '批处理大小',
-                    helperText: '每次请求的最大文本数量，默认 10（兼容大多数 API）',
+                    labelText: 'batch size',
+                    helperText: 'Maximum number of texts per request, default 10 (compatible with most APIs)',
                     helperMaxLines: 2,
                   ),
                   keyboardType: TextInputType.number,
@@ -753,7 +753,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
                 ),
                 const SizedBox(height: 12),
                 SwitchListTile(
-                  title: const Text('设为默认'),
+                  title: const Text('Set as default'),
                   contentPadding: EdgeInsets.zero,
                   value: isDefault,
                   onChanged: (v) => setDialogState(() => isDefault = v),
@@ -764,7 +764,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
           actions: [
             TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: const Text('取消')),
+                child: const Text('Cancel')),
             FilledButton(
               onPressed: () async {
                 final data = <String, dynamic>{
@@ -794,7 +794,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
                 }
                 if (ok && ctx.mounted) Navigator.pop(ctx);
               },
-              child: Text(config == null ? '创建' : '保存'),
+              child: Text(config == null ? 'create' : 'save'),
             ),
           ],
         ),
@@ -820,13 +820,13 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
   String _rerankModelHint(String provider) {
     switch (provider) {
       case 'jina':
-        return '如 jina-reranker-v2-base-multilingual';
+        return 'Such as jina-reranker-v2-base-multilingual';
       case 'cohere':
-        return '如 rerank-v3.5';
+        return 'Such as rerank-v3.5';
       case 'openai':
-        return '如 gpt-4o-mini (chat-based rerank)';
+        return 'Such as gpt-4o-mini (chat-based rerank)';
       default:
-        return '如 BAAI/bge-reranker-v2-m3';
+        return 'Such as BAAI/bge-reranker-v2-m3';
     }
   }
 
@@ -849,7 +849,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          title: Text(config == null ? '添加 Rerank 模型' : '编辑 Rerank 模型'),
+          title: Text(config == null ? 'Add Rerank model' : 'Edit the Rerank model'),
           content: SizedBox(
             width: 400,
             child: SingleChildScrollView(
@@ -874,7 +874,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
                   TextField(
                     controller: modelCtl,
                     decoration: InputDecoration(
-                      labelText: '模型名称',
+                      labelText: 'Model name',
                       hintText: _rerankModelHint(selectedProvider),
                     ),
                   ),
@@ -884,7 +884,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
                     decoration: InputDecoration(
                       labelText: 'API Endpoint',
                       hintText: _rerankEndpointHint(selectedProvider),
-                      helperText: '兼容 /v1/rerank 或 /rerank 接口',
+                      helperText: 'Compatible with /v1/rerank or /rerank interface',
                       helperMaxLines: 2,
                     ),
                   ),
@@ -893,7 +893,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
                     controller: apiKeyCtl,
                     decoration: InputDecoration(
                       labelText: 'API Key',
-                      hintText: config != null ? '留空则不修改' : 'your-api-key',
+                      hintText: config != null ? 'Leave blank to make no changes' : 'your-api-key',
                     ),
                     obscureText: true,
                   ),
@@ -901,7 +901,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
                   const Divider(),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Text('检索参数', style: TextStyle(
+                    child: Text('Retrieval parameters', style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
                       color: Colors.grey.shade700,
@@ -914,8 +914,8 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
                         child: TextField(
                           controller: recallKCtl,
                           decoration: const InputDecoration(
-                            labelText: '初始召回数',
-                            helperText: '嵌入检索候选数（默认 30）',
+                            labelText: 'Initial recall count',
+                            helperText: 'Number of embedded search candidates (default 30)',
                             helperMaxLines: 2,
                           ),
                           keyboardType: TextInputType.number,
@@ -927,8 +927,8 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
                         child: TextField(
                           controller: topNCtl,
                           decoration: const InputDecoration(
-                            labelText: '重排保留数',
-                            helperText: '重排后保留 Top N（默认 5）',
+                            labelText: 'Number of rearranged reservations',
+                            helperText: 'Keep Top N after rearrangement (default 5)',
                             helperMaxLines: 2,
                           ),
                           keyboardType: TextInputType.number,
@@ -941,8 +941,8 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
                   TextField(
                     controller: timeoutCtl,
                     decoration: const InputDecoration(
-                      labelText: '超时时间（秒）',
-                      helperText: 'Rerank API 请求超时（默认 30 秒）',
+                      labelText: 'Timeout (seconds)',
+                      helperText: 'Rerank API request timeout (default 30 seconds)',
                       helperMaxLines: 2,
                     ),
                     keyboardType: TextInputType.number,
@@ -950,9 +950,9 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
                   ),
                   const SizedBox(height: 8),
                   SwitchListTile(
-                    title: const Text('失败自动降级'),
+                    title: const Text('Automatic downgrade on failure'),
                     subtitle: const Text(
-                      'Rerank 调用失败时自动回退到嵌入检索',
+                      'Automatically fall back to embedded retrieval when Rerank call fails',
                       style: TextStyle(fontSize: 11),
                     ),
                     contentPadding: EdgeInsets.zero,
@@ -960,7 +960,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
                     onChanged: (v) => setDialogState(() => fallbackEnabled = v),
                   ),
                   SwitchListTile(
-                    title: const Text('设为默认'),
+                    title: const Text('Set as default'),
                     contentPadding: EdgeInsets.zero,
                     value: isDefault,
                     onChanged: (v) => setDialogState(() => isDefault = v),
@@ -972,7 +972,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
           actions: [
             TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: const Text('取消')),
+                child: const Text('Cancel')),
             FilledButton(
               onPressed: () async {
                 final data = <String, dynamic>{
@@ -1000,10 +1000,10 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
                   if (ok) {
                     Navigator.pop(ctx);
                   } else {
-                    final err = notifier.lastError ?? '保存失败';
+                    final err = notifier.lastError ?? 'Save failed';
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Rerank 配置保存失败: $err'),
+                        content: Text('Rerank configuration failed to save: $err'),
                         backgroundColor: Colors.red,
                         duration: const Duration(seconds: 5),
                       ),
@@ -1011,7 +1011,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage>
                   }
                 }
               },
-              child: Text(config == null ? '创建' : '保存'),
+              child: Text(config == null ? 'create' : 'save'),
             ),
           ],
         ),

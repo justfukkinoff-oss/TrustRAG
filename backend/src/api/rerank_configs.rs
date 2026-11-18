@@ -309,14 +309,14 @@ async fn test_connection(
             "provider": provider,
             "model": model_name,
             "scores": scores,
-            "message": "连接成功"
+            "message": "Connection successful"
         }))),
         Err(e) => Ok(Json(serde_json::json!({
             "success": false,
             "provider": provider,
             "model": model_name,
             "error": e.to_string(),
-            "message": format!("连接失败: {}", e)
+            "message": format!("Connection failed: {}", e)
         }))),
     }
 }
@@ -350,7 +350,7 @@ async fn set_default(
 
     Ok(Json(serde_json::json!({
         "success": true,
-        "message": "已设为默认重排模型"
+        "message": "Set as default reflow model"
     })))
 }
 

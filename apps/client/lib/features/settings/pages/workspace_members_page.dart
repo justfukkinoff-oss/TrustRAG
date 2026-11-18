@@ -101,7 +101,7 @@ class _WorkspaceMembersPageState extends ConsumerState<WorkspaceMembersPage> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          title: const Text('邀请成员'),
+          title: const Text('Invite members'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -109,7 +109,7 @@ class _WorkspaceMembersPageState extends ConsumerState<WorkspaceMembersPage> {
                 controller: emailController,
                 autofocus: true,
                 decoration: const InputDecoration(
-                  labelText: '邮箱地址',
+                  labelText: 'Email address',
                   hintText: 'user@example.com',
                   border: OutlineInputBorder(),
                 ),
@@ -119,12 +119,12 @@ class _WorkspaceMembersPageState extends ConsumerState<WorkspaceMembersPage> {
               DropdownButtonFormField<String>(
                 initialValue: selectedRole,
                 decoration: const InputDecoration(
-                  labelText: '角色',
+                  labelText: 'role',
                   border: OutlineInputBorder(),
                 ),
                 items: const [
-                  DropdownMenuItem(value: 'viewer', child: Text('查看者')),
-                  DropdownMenuItem(value: 'editor', child: Text('编辑者')),
+                  DropdownMenuItem(value: 'viewer', child: Text('Viewer')),
+                  DropdownMenuItem(value: 'editor', child: Text('Editor')),
                 ],
                 onChanged: (v) {
                   if (v != null) setDialogState(() => selectedRole = v);
@@ -134,7 +134,7 @@ class _WorkspaceMembersPageState extends ConsumerState<WorkspaceMembersPage> {
           ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(ctx), child: const Text('取消')),
+                onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
             FilledButton(
               onPressed: () {
                 final email = emailController.text.trim();
@@ -142,7 +142,7 @@ class _WorkspaceMembersPageState extends ConsumerState<WorkspaceMembersPage> {
                   Navigator.pop(ctx, {'email': email, 'role': selectedRole});
                 }
               },
-              child: const Text('邀请'),
+              child: const Text('Invite'),
             ),
           ],
         ),
@@ -157,14 +157,14 @@ class _WorkspaceMembersPageState extends ConsumerState<WorkspaceMembersPage> {
       await api.dio.post('/workspaces/${ws.id}/members', data: result);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('已邀请 ${result['email']}')),
+          SnackBar(content: Text('${result['email']} has been invited')),
         );
       }
       _loadMembers();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('邀请失败: $e')),
+          SnackBar(content: Text('Invitation failed: $e')),
         );
       }
     }
@@ -177,7 +177,7 @@ class _WorkspaceMembersPageState extends ConsumerState<WorkspaceMembersPage> {
     final newRole = await showDialog<String>(
       context: context,
       builder: (ctx) => SimpleDialog(
-        title: Text('修改 ${member.displayName} 的角色'),
+        title: Text('Modify the role of ${member.displayName}'),
         children: [
           for (final role in ['owner', 'admin', 'editor', 'viewer'])
             SimpleDialogOption(
@@ -207,7 +207,7 @@ class _WorkspaceMembersPageState extends ConsumerState<WorkspaceMembersPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('修改失败: $e')),
+          SnackBar(content: Text('Modification failed: $e')),
         );
       }
     }
@@ -220,16 +220,16 @@ class _WorkspaceMembersPageState extends ConsumerState<WorkspaceMembersPage> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('移除成员'),
-        content: Text('确认将 ${member.displayName} 从工作区中移除？'),
+        title: const Text('Remove member'),
+        content: Text('Confirm to remove ${member.displayName} from the workspace?'),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('取消')),
+              child: const Text('Cancel')),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: FilledButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('移除'),
+            child: const Text('Remove'),
           ),
         ],
       ),
@@ -244,7 +244,7 @@ class _WorkspaceMembersPageState extends ConsumerState<WorkspaceMembersPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('移除失败: $e')),
+          SnackBar(content: Text('Removal failed: $e')),
         );
       }
     }
@@ -253,26 +253,26 @@ class _WorkspaceMembersPageState extends ConsumerState<WorkspaceMembersPage> {
   String _roleLabel(String role) {
     switch (role) {
       case 'owner':
-        return '所有者';
+        return 'owner';
       case 'editor':
-        return '编辑者';
+        return 'Editor';
       case 'admin':
-        return '管理员';
+        return 'Administrator';
       default:
-        return '查看者';
+        return 'Viewer';
     }
   }
 
   String _roleDescription(String role) {
     switch (role) {
       case 'owner':
-        return '完全控制权限，可管理成员、设置和 API 配置';
+        return 'Full control to manage members, settings, and API configuration';
       case 'admin':
-        return '可管理成员、LLM 配置和 API Key';
+        return 'Manageable members, LLM configurations and API keys';
       case 'editor':
-        return '可编辑文档和对话';
+        return 'Editable documents and conversations';
       default:
-        return '仅可查看文档和对话，提交审核';
+        return 'Can only view documents and conversations, submit for review';
     }
   }
 
@@ -295,17 +295,17 @@ class _WorkspaceMembersPageState extends ConsumerState<WorkspaceMembersPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('成员管理${ws != null ? " — ${ws.name}" : ""}'),
+        title: Text('Member Management${ws != null ? " — ${ws.name}" : ""}'),
         actions: [
           if (_canManage)
             IconButton(
               icon: const Icon(Icons.person_add),
-              tooltip: '邀请成员',
+              tooltip: 'Invite members',
               onPressed: _inviteMember,
             ),
           IconButton(
             icon: const Icon(Icons.refresh),
-            tooltip: '刷新',
+            tooltip: 'Refresh',
             onPressed: _loadMembers,
           ),
         ],
@@ -325,9 +325,9 @@ class _WorkspaceMembersPageState extends ConsumerState<WorkspaceMembersPage> {
           children: [
             Icon(Icons.error_outline, size: 48, color: Colors.red.shade300),
             const SizedBox(height: 12),
-            Text('加载失败: $_error'),
+            Text('Loading failed: $_error'),
             const SizedBox(height: 12),
-            OutlinedButton(onPressed: _loadMembers, child: const Text('重试')),
+            OutlinedButton(onPressed: _loadMembers, child: const Text('Try again')),
           ],
         ),
       );
@@ -339,13 +339,13 @@ class _WorkspaceMembersPageState extends ConsumerState<WorkspaceMembersPage> {
           children: [
             Icon(Icons.group_outlined, size: 64, color: Colors.grey.shade300),
             const SizedBox(height: 12),
-            Text('暂无成员', style: TextStyle(color: Colors.grey.shade500)),
+            Text('No members yet', style: TextStyle(color: Colors.grey.shade500)),
             if (_canManage) ...[
               const SizedBox(height: 12),
               FilledButton.icon(
                 onPressed: _inviteMember,
                 icon: const Icon(Icons.person_add),
-                label: const Text('邀请成员'),
+                label: const Text('Invite members'),
               ),
             ],
           ],
@@ -385,7 +385,7 @@ class _WorkspaceMembersPageState extends ConsumerState<WorkspaceMembersPage> {
                           .withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    child: Text('我',
+                    child: Text('me',
                         style: TextStyle(
                             fontSize: 10,
                             color: Theme.of(context).colorScheme.primary)),
@@ -398,11 +398,11 @@ class _WorkspaceMembersPageState extends ConsumerState<WorkspaceMembersPage> {
                 ? PopupMenuButton<String>(
                     itemBuilder: (_) => [
                       const PopupMenuItem(
-                          value: 'role', child: Text('修改角色')),
+                          value: 'role', child: Text('Modify role')),
                       const PopupMenuItem(
                           value: 'remove',
                           child:
-                              Text('移除', style: TextStyle(color: Colors.red))),
+                              Text('Remove', style: TextStyle(color: Colors.red))),
                     ],
                     onSelected: (v) {
                       if (v == 'role') _changeRole(m);

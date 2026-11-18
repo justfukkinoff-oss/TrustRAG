@@ -129,7 +129,7 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
           setState(() {
             _installing = false;
             _installSuccess = false;
-            _installMessage = '后端未返回 task_id';
+            _installMessage = 'Backend did not return task_id';
           });
         }
         return;
@@ -149,7 +149,7 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
           _installing = false;
           _installSuccess = false;
           _installLog = e.message ?? e.toString();
-          _installMessage = '安装请求异常';
+          _installMessage = 'Installation request exception';
         });
       }
     } catch (e) {
@@ -212,14 +212,14 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
         setState(() {
           _installing = false;
           _installSuccess = false;
-          _installMessage = '安装已被取消。';
-          _installLog += '\n--- 安装已取消 ---';
+          _installMessage = 'The installation has been canceled.';
+          _installLog += '\n--- Installation canceled ---';
         });
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('取消失败: $e')),
+          SnackBar(content: Text('Cancellation failed: $e')),
         );
       }
     }
@@ -245,12 +245,12 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('OCR 组件管理'),
+        title: const Text('OCR component management'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _loadAll,
-            tooltip: '刷新状态',
+            tooltip: 'refresh status',
           ),
         ],
       ),
@@ -276,10 +276,10 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
         children: [
           Icon(Icons.error_outline, size: 48, color: Colors.red.shade300),
           const SizedBox(height: 12),
-          Text('加载失败: $_error',
+          Text('Loading failed: $_error',
               style: TextStyle(color: Colors.grey.shade600)),
           const SizedBox(height: 12),
-          OutlinedButton(onPressed: _loadAll, child: const Text('重试')),
+          OutlinedButton(onPressed: _loadAll, child: const Text('Try again')),
         ],
       ),
     );
@@ -296,15 +296,15 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
     if (pdfReady) {
       bannerColor = Colors.green;
       bannerIcon = Icons.check_circle;
-      bannerTitle = 'OCR 组件已就绪，可处理扫描版 PDF';
+      bannerTitle = 'OCR component is ready to process scanned PDFs';
     } else if (anyAvailable) {
       bannerColor = Colors.orange;
       bannerIcon = Icons.warning_amber;
-      bannerTitle = 'OCR 部分就绪，扫描版 PDF 可能不可用';
+      bannerTitle = 'OCR partially ready, scanned PDF may not be available';
     } else {
       bannerColor = Colors.orange;
       bannerIcon = Icons.warning_amber;
-      bannerTitle = '未检测到 OCR 组件';
+      bannerTitle = 'OCR component not detected';
     }
 
     return Card(
@@ -349,11 +349,11 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
       controlsBuilder: (context, details) => const SizedBox.shrink(),
       steps: [
         Step(
-          title: const Text('检测当前状态'),
+          title: const Text('Check current status'),
           subtitle: _ocrStatus != null
               ? Text(_ocrStatus!['any_available'] == true
-                  ? '已检测到 OCR 工具'
-                  : '未检测到 OCR 工具')
+                  ? 'OCR tool detected'
+                  : 'OCR tool not detected')
               : null,
           content: _buildStep1DetectStatus(theme),
           isActive: _currentStep >= 0,
@@ -362,7 +362,7 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
               : (_currentStep > 0 ? StepState.complete : StepState.indexed),
         ),
         Step(
-          title: const Text('选择 OCR 引擎'),
+          title: const Text('Select OCR engine'),
           subtitle: _selectedEngine != null
               ? Text(_toolDisplayName(_selectedEngine!))
               : null,
@@ -373,10 +373,10 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
               : StepState.indexed,
         ),
         Step(
-          title: const Text('安装'),
+          title: const Text('Installation'),
           subtitle: _installSuccess == true
-              ? const Text('安装成功')
-              : (_installing ? const Text('安装中...') : null),
+              ? const Text('Installation successful')
+              : (_installing ? const Text('Installing...') : null),
           content: _buildStep3Install(theme),
           isActive: _currentStep >= 2,
           state: _installSuccess == true
@@ -384,9 +384,9 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
               : StepState.indexed,
         ),
         Step(
-          title: const Text('验证安装'),
+          title: const Text('Verify installation'),
           subtitle: _verifySuccess == true
-              ? const Text('验证通过')
+              ? const Text('Verification passed')
               : null,
           content: _buildStep4Verify(theme),
           isActive: _currentStep >= 3,
@@ -414,15 +414,15 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
 
           final subtitleParts = <String>[];
           if (available) {
-            if (version != null && version.isNotEmpty) subtitleParts.add('版本: $version');
-            if (path != null) subtitleParts.add('路径: $path');
+            if (version != null && version.isNotEmpty) subtitleParts.add('Version: $version');
+            if (path != null) subtitleParts.add('Path: $path');
             if (languages != null && languages.isNotEmpty) {
-              subtitleParts.add('语言包: ${languages.join(", ")}');
+              subtitleParts.add('Language pack: ${languages.join(", ")}');
             }
           } else if (missingHint != null) {
             subtitleParts.add(missingHint);
           } else {
-            subtitleParts.add('未安装');
+            subtitleParts.add('Not installed');
           }
 
           return Card(
@@ -437,8 +437,8 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
                   style: TextStyle(fontSize: 12, color: available ? Colors.grey.shade600 : Colors.orange.shade700)),
               isThreeLine: subtitleParts.length > 1,
               trailing: available
-                  ? _chip('可用', Colors.green)
-                  : _chip('缺失', Colors.orange),
+                  ? _chip('Available', Colors.green)
+                  : _chip('Missing', Colors.orange),
             ),
           );
         }),
@@ -448,13 +448,13 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
             OutlinedButton.icon(
               onPressed: _loadStatus,
               icon: const Icon(Icons.refresh, size: 16),
-              label: const Text('重新检测'),
+              label: const Text('Retest'),
             ),
             const SizedBox(width: 12),
             if (_ocrStatus?['pdf_ocr_ready'] != true)
               FilledButton(
                 onPressed: () => setState(() => _currentStep = 1),
-                child: const Text('开始安装'),
+                child: const Text('Start installation'),
               ),
           ],
         ),
@@ -488,8 +488,8 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    '平台: ${_platformDisplayName(platform)}  |  '
-                    '包管理器: ${managers.map((m) => m.toString()).join(", ")}',
+                    'Platform: ${_platformDisplayName(platform)} |  '
+                    'Package manager: ${managers.map((m) => m.toString()).join(", ")}',
                     style: TextStyle(fontSize: 13, color: Colors.blue.shade800),
                   ),
                 ),
@@ -503,7 +503,7 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
             color: Colors.red.shade50,
             child: const Padding(
               padding: EdgeInsets.all(16),
-              child: Text('未找到可用的自动安装方式，请参考下方手动安装指南。'),
+              child: Text('No available automatic installation method was found, please refer to the manual installation guide below.'),
             ),
           )
         else
@@ -561,7 +561,7 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
                           ),
                           if (needsSudo)
                             Tooltip(
-                              message: '需要管理员权限',
+                              message: 'Requires administrator rights',
                               child: Chip(
                                 label: const Text('sudo', style: TextStyle(fontSize: 10)),
                                 backgroundColor: Colors.amber.shade100,
@@ -586,14 +586,14 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
           children: [
             OutlinedButton(
               onPressed: () => setState(() => _currentStep = 0),
-              child: const Text('上一步'),
+              child: const Text('Previous step'),
             ),
             const SizedBox(width: 12),
             FilledButton(
               onPressed: _selectedMethod != null
                   ? () => setState(() => _currentStep = 2)
                   : null,
-              child: const Text('下一步'),
+              child: const Text('Next step'),
             ),
           ],
         ),
@@ -603,7 +603,7 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
 
   Widget _buildStep3Install(ThemeData theme) {
     if (_selectedMethod == null) {
-      return const Text('请先选择安装方式');
+      return const Text('Please select the installation method first');
     }
     final engine = _selectedMethod!['engine'] ?? '';
     final pm = _selectedMethod!['package_manager'] ?? '';
@@ -619,7 +619,7 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('即将安装: ${_toolDisplayName(engine)} (via $pm)',
+                Text('About to install: ${_toolDisplayName(engine)} (via $pm)',
                     style: const TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
                 _commandBlock(command),
@@ -635,8 +635,8 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
                           Icon(Icons.admin_panel_settings, size: 20, color: Colors.amber.shade700),
                           const SizedBox(width: 8),
                           Expanded(child: Text(
-                            '此操作需要管理员权限。Windows 下会弹出 UAC 权限确认窗口，请点击"是"以继续安装。\n'
-                            '如果安装卡住，可能是权限不足。建议手动以管理员身份运行命令。',
+                            'This operation requires administrator privileges. A UAC permission confirmation window will pop up under Windows, please click "Yes" to continue the installation. \n'
+                            'If the installation gets stuck, you may have insufficient permissions. It is recommended to run the command manually as an administrator.',
                             style: TextStyle(fontSize: 12, color: Colors.amber.shade800),
                           )),
                         ],
@@ -657,11 +657,11 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  const Expanded(child: Text('正在安装，实时日志如下...')),
+                  const Expanded(child: Text('Installing, the real-time log is as follows...')),
                   OutlinedButton.icon(
                     onPressed: _cancelInstall,
                     icon: const Icon(Icons.stop_circle_outlined, size: 16, color: Colors.red),
-                    label: const Text('取消安装', style: TextStyle(color: Colors.red)),
+                    label: const Text('Cancel installation', style: TextStyle(color: Colors.red)),
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(color: Colors.red.shade200),
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -705,7 +705,7 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
                   Row(children: [
                     const Icon(Icons.check_circle, color: Colors.green),
                     const SizedBox(width: 8),
-                    Expanded(child: Text(_installMessage ?? '安装成功！')),
+                    Expanded(child: Text(_installMessage ?? 'Installation successful!')),
                   ]),
                 ],
               ),
@@ -722,11 +722,11 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
                   Row(children: [
                     const Icon(Icons.error, color: Colors.red),
                     const SizedBox(width: 8),
-                    Expanded(child: Text(_installMessage ?? '安装失败，请查看日志或手动安装。')),
+                    Expanded(child: Text(_installMessage ?? 'The installation failed, please check the log or install manually.')),
                   ]),
                   if (_installExitCode != null) ...[
                     const SizedBox(height: 4),
-                    Text('退出码: $_installExitCode',
+                    Text('Exit code: $_installExitCode',
                         style: TextStyle(fontSize: 12, color: Colors.red.shade300, fontFamily: 'monospace')),
                   ],
                 ],
@@ -736,7 +736,7 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
         if (_installLog.isNotEmpty) ...[
           const SizedBox(height: 8),
           ExpansionTile(
-            title: const Text('安装日志', style: TextStyle(fontSize: 13)),
+            title: const Text('Installation log', style: TextStyle(fontSize: 13)),
             initiallyExpanded: _installSuccess == false,
             children: [
               Container(
@@ -765,11 +765,11 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
                   onPressed: () {
                     Clipboard.setData(ClipboardData(text: _installLog));
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('日志已复制到剪贴板'), duration: Duration(seconds: 1)),
+                      const SnackBar(content: Text('Log copied to clipboard'), duration: Duration(seconds: 1)),
                     );
                   },
                   icon: const Icon(Icons.copy, size: 14),
-                  label: const Text('复制日志', style: TextStyle(fontSize: 12)),
+                  label: const Text('Copy log', style: TextStyle(fontSize: 12)),
                 ),
               ),
             ],
@@ -780,18 +780,18 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
           children: [
             OutlinedButton(
               onPressed: _installing ? null : () => setState(() => _currentStep = 1),
-              child: const Text('上一步'),
+              child: const Text('Previous step'),
             ),
             const SizedBox(width: 12),
             if (_installSuccess != true)
               FilledButton(
                 onPressed: _installing ? null : _startInstall,
-                child: Text(_installSuccess == false ? '重试安装' : '开始安装'),
+                child: Text(_installSuccess == false ? 'Retry installation' : 'Start installation'),
               ),
             if (_installSuccess == true) ...[
               FilledButton(
                 onPressed: () => setState(() => _currentStep = 3),
-                child: const Text('验证安装'),
+                child: const Text('Verify installation'),
               ),
             ],
           ],
@@ -807,14 +807,14 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('检查 OCR 工具是否已正确安装并可以使用。'),
+        const Text('Check that the OCR tool is installed correctly and ready for use.'),
         const SizedBox(height: 12),
         if (_verifying)
           const Column(
             children: [
               CircularProgressIndicator(),
               SizedBox(height: 8),
-              Text('正在验证...'),
+              Text('Verifying...'),
             ],
           )
         else if (_verifySuccess == true)
@@ -834,13 +834,13 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        pdfReady ? '安装验证通过！' : 'OCR 部分可用',
+                        pdfReady ? 'Installation verification passed!' : 'OCR partially available',
                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                       ),
                       const SizedBox(height: 4),
                       Text(pdfReady
-                        ? 'OCR 组件已就绪，可以处理扫描版 PDF 文档。'
-                        : _ocrStatus?['recommendation'] as String? ?? '部分依赖缺失，请查看下方详情。',
+                        ? 'The OCR component is ready to process scanned PDF documents.'
+                        : _ocrStatus?['recommendation'] as String? ?? 'Some dependencies are missing, please see details below.',
                       ),
                     ],
                   ),
@@ -858,7 +858,7 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
                         size: 16, color: ok ? Colors.green : Colors.red),
                     const SizedBox(width: 8),
                     Expanded(child: Text(
-                      ok ? name : '$name — ${hint ?? "缺失"}',
+            ok ? name : '$name — ${hint ?? "Missing"}',
                       style: TextStyle(
                         fontSize: 13,
                         color: ok ? Colors.grey.shade700 : Colors.red.shade700,
@@ -878,10 +878,10 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
                 children: [
                   Icon(Icons.error, color: Colors.red, size: 48),
                   SizedBox(height: 8),
-                  Text('验证失败',
+                  Text('Authentication failed',
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                   SizedBox(height: 4),
-                  Text('未检测到 OCR 工具。请确认安装是否成功，或尝试重新安装。'),
+                  Text('OCR tool not detected. Please confirm whether the installation is successful or try reinstalling.'),
                 ],
               ),
             ),
@@ -891,13 +891,13 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
           children: [
             OutlinedButton(
               onPressed: () => setState(() => _currentStep = 2),
-              child: const Text('返回安装'),
+              child: const Text('Return to installation'),
             ),
             const SizedBox(width: 12),
             FilledButton.icon(
               onPressed: _verifying ? null : _verifyInstall,
               icon: const Icon(Icons.verified, size: 16),
-              label: Text(_verifySuccess != null ? '重新验证' : '开始验证'),
+              label: Text(_verifySuccess != null ? 'revalidate' : 'Start verification'),
             ),
           ],
         ),
@@ -907,7 +907,7 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
 
   Widget _buildManualInstallGuide(ThemeData theme) {
     return ExpansionTile(
-      title: const Text('手动安装指南', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+      title: const Text('Manual installation guide', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
       tilePadding: EdgeInsets.zero,
       childrenPadding: const EdgeInsets.symmetric(vertical: 8),
       children: [
@@ -917,7 +917,7 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Tesseract OCR (推荐)',
+                const Text('Tesseract OCR (recommended)',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                 const SizedBox(height: 8),
                 _installStep('macOS', 'brew install tesseract tesseract-lang'),
@@ -926,12 +926,12 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
                     'Ubuntu/Debian', 'sudo apt install tesseract-ocr tesseract-ocr-chi-sim'),
                 const SizedBox(height: 6),
                 _installStep(
-                    'Windows', '从 GitHub 下载安装包:\nhttps://github.com/UB-Mannheim/tesseract/wiki'),
+                    'Windows', 'Download the installation package from GitHub:\nhttps://github.com/UB-Mannheim/tesseract/wiki'),
                 const SizedBox(height: 16),
-                const Text('PaddleOCR (中文效果好)',
+                const Text('PaddleOCR (good Chinese effect)',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                 const SizedBox(height: 8),
-                _installStep('所有平台', 'pip install paddleocr paddlepaddle'),
+                _installStep('All platforms', 'pip install paddleocr paddlepaddle'),
               ],
             ),
           ),
@@ -962,7 +962,7 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
             onTap: () {
               Clipboard.setData(ClipboardData(text: command));
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('已复制到剪贴板'), duration: Duration(seconds: 1)),
+                const SnackBar(content: Text('Copied to clipboard'), duration: Duration(seconds: 1)),
               );
             },
             child: Icon(Icons.copy, size: 16, color: Colors.grey.shade500),
@@ -1006,7 +1006,7 @@ class _OcrSettingsPageState extends ConsumerState<OcrSettingsPage> {
               Clipboard.setData(ClipboardData(text: command));
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                    content: Text('已复制到剪贴板'), duration: Duration(seconds: 1)),
+                    content: Text('Copied to clipboard'), duration: Duration(seconds: 1)),
               );
             },
             child: Icon(Icons.copy, size: 16, color: Colors.grey.shade400),

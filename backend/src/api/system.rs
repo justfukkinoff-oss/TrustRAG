@@ -81,12 +81,12 @@ async fn backup_db(
         Ok(path) => Ok(Json(BackupResult {
             success: true,
             backup_path: Some(path.clone()),
-            message: format!("数据库已备份到: {}", path),
+            message: format!("The database has been backed up to: {}", path),
         })),
         Err(e) => Ok(Json(BackupResult {
             success: false,
             backup_path: None,
-            message: format!("备份失败: {}", e),
+            message: format!("Backup failed: {}", e),
         })),
     }
 }
@@ -135,7 +135,7 @@ async fn reset_db(
 
     Ok(Json(ResetResult {
         success: true,
-        message: "本地数据已重置，请重新注册账号".into(),
+        message: "Local data has been reset, please register an account again".into(),
     }))
 }
 
@@ -158,13 +158,13 @@ async fn validate_token(
         Ok(Json(TokenValidation {
             valid: true,
             user_exists: true,
-            message: "Token 有效且用户存在".into(),
+            message: "The token is valid and the user exists".into(),
         }))
     } else {
         Ok(Json(TokenValidation {
             valid: true,
             user_exists: false,
-            message: "Token 有效但当前数据库中不存在对应用户，请重新登录".into(),
+            message: "The token is valid but the corresponding user does not exist in the current database. Please log in again.".into(),
         }))
     }
 }
@@ -243,9 +243,9 @@ async fn ocr_status(
         }
     }
     let tess_hint = if !tess_ok {
-        Some("安装 Tesseract: brew install tesseract / apt install tesseract-ocr / choco install tesseract".into())
+        Some("Install Tesseract: brew install tesseract / apt install tesseract-ocr / choco install tesseract".into())
     } else if !tess_langs.contains(&"eng".to_string()) {
-        Some("缺少 eng 语言包".into())
+        Some("Missing eng language pack".into())
     } else {
         None
     };
@@ -262,26 +262,26 @@ async fn ocr_status(
     let has_chi_sim = tess_langs.contains(&"chi_sim".to_string());
     tools.push(OcrToolStatus {
         name: "chi_sim".into(),
-        display_name: "中文简体语言包 (chi_sim)".into(),
+        display_name: "Chinese simplified language pack (chi_sim)".into(),
         available: tess_ok && has_chi_sim,
         version: None,
         path: None,
         languages: None,
         missing_hint: if tess_ok && !has_chi_sim {
-            Some("安装中文语言包: apt install tesseract-ocr-chi-sim / brew install tesseract-lang".into())
+            Some("Install Chinese language pack: apt install tesseract-ocr-chi-sim / brew install tesseract-lang".into())
         } else { None },
     });
 
     let (pdftoppm_ok, pdftoppm_ver, pdftoppm_path) = check_binary("pdftoppm", &["pdftoppm", "-v"]).await;
     tools.push(OcrToolStatus {
         name: "pdftoppm".into(),
-        display_name: "Poppler / pdftoppm (PDF 转图片)".into(),
+        display_name: "Poppler / pdftoppm (PDF to image)".into(),
         available: pdftoppm_ok,
         version: pdftoppm_ver,
         path: pdftoppm_path,
         languages: None,
         missing_hint: if !pdftoppm_ok {
-            Some("安装 Poppler: brew install poppler / apt install poppler-utils / choco install poppler".into())
+            Some("Install Poppler: brew install poppler / apt install poppler-utils / choco install poppler".into())
         } else { None },
     });
 
@@ -296,20 +296,20 @@ async fn ocr_status(
         version: paddle_ver,
         path: paddle_path,
         languages: None,
-        missing_hint: if !paddle_ok { Some("安装: pip3 install paddleocr paddlepaddle".into()) } else { None },
+        missing_hint: if !paddle_ok { Some("Installation: pip3 install paddleocr paddlepaddle".into()) } else { None },
     });
 
     let any_ocr = tess_ok || paddle_ok;
     let pdf_ocr_ready = (tess_ok && pdftoppm_ok) || paddle_ok;
 
     let recommendation = if pdf_ocr_ready {
-        "OCR 工具已就绪，可处理扫描版 PDF。".into()
+        "OCR tools are ready to process scanned PDFs.".into()
     } else if tess_ok && !pdftoppm_ok {
-        "已检测到 Tesseract，但缺少 pdftoppm (Poppler)，无法处理扫描版 PDF。\n请安装 Poppler 后重试。".into()
+        "Tesseract has been detected, but pdftoppm (Poppler) is missing and cannot process scanned PDFs. \nPlease install Poppler and try again.".into()
     } else if !any_ocr {
-        "未检测到 OCR 工具。建议安装 Tesseract + Poppler (推荐) 或 PaddleOCR。".into()
+        "OCR tool not detected. It is recommended to install Tesseract + Poppler (recommended) or PaddleOCR.".into()
     } else {
-        "OCR 基础工具已安装，建议补全依赖以支持扫描版 PDF。".into()
+        "The basic OCR tools have been installed. It is recommended to complete the dependencies to support scanned PDFs.".into()
     };
 
     Ok(Json(OcrStatus { any_available: any_ocr, pdf_ocr_ready, tools, recommendation }))
@@ -489,7 +489,7 @@ async fn ocr_install_options(
                     engine: "tesseract".into(),
                     command: "sudo apt install -y tesseract-ocr tesseract-ocr-chi-sim tesseract-ocr-eng poppler-utils".into(),
                     needs_sudo: true,
-                    description: "通过 apt 安装 Tesseract OCR 及中英文语言包".into(),
+                    description: "Install Tesseract OCR and Chinese and English language packs through apt".into(),
                 });
             }
             if managers.contains(&PackageManager::Brew) {
@@ -498,7 +498,7 @@ async fn ocr_install_options(
                     engine: "tesseract".into(),
                     command: "brew install tesseract tesseract-lang poppler".into(),
                     needs_sudo: false,
-                    description: "通过 Homebrew 安装 Tesseract OCR (Linuxbrew)".into(),
+                    description: "Install Tesseract OCR via Homebrew (Linuxbrew)".into(),
                 });
             }
         }
@@ -509,7 +509,7 @@ async fn ocr_install_options(
                     engine: "tesseract".into(),
                     command: "brew install tesseract tesseract-lang poppler".into(),
                     needs_sudo: false,
-                    description: "通过 Homebrew 安装 Tesseract OCR 及全部语言包".into(),
+                    description: "Install Tesseract OCR and all language packs through Homebrew".into(),
                 });
             }
         }
@@ -520,7 +520,7 @@ async fn ocr_install_options(
                     engine: "tesseract".into(),
                     command: "choco install tesseract poppler -y --no-progress".into(),
                     needs_sudo: true,
-                    description: "通过 Chocolatey 安装 Tesseract OCR + Poppler (含 pdftoppm)".into(),
+                    description: "Install Tesseract OCR + Poppler (with pdftoppm) via Chocolatey".into(),
                 });
             }
             if managers.contains(&PackageManager::Winget) {
@@ -529,7 +529,7 @@ async fn ocr_install_options(
                     engine: "tesseract".into(),
                     command: "winget install UB-Mannheim.TesseractOCR".into(),
                     needs_sudo: false,
-                    description: "通过 winget 安装 Tesseract OCR (需另行安装 Poppler)".into(),
+                    description: "Install Tesseract OCR via winget (Poppler needs to be installed separately)".into(),
                 });
             }
         }
@@ -541,7 +541,7 @@ async fn ocr_install_options(
             engine: "paddleocr".into(),
             command: "pip3 install paddleocr paddlepaddle".into(),
             needs_sudo: false,
-            description: "通过 pip 安装 PaddleOCR (中文效果优秀)".into(),
+            description: "Install PaddleOCR via pip (excellent Chinese effect)".into(),
         });
     }
 
@@ -611,7 +611,7 @@ async fn ocr_install(
                 package_manager: pm.into(),
                 output: String::new(),
                 exit_code: None,
-                message: format!("不支持的安装组合: engine={}, pm={}, platform={}", engine, pm, platform),
+                message: format!("Unsupported installation combinations: engine={}, pm={}, platform={}", engine, pm, platform),
             }));
         }
     };
@@ -648,16 +648,16 @@ async fn ocr_install(
             }
 
             let message = if already_installed {
-                format!("{} 已安装（最新版本），无需更新。", engine)
+                format!("{} is installed (latest version), no update required.", engine)
             } else if success {
-                format!("{} 安装成功！请刷新页面确认状态。", engine)
+                format!("{} installed successfully! Please refresh the page to confirm the status.", engine)
             } else {
                 let hint = if !output.status.success() && lower.contains("access") {
-                    "\n提示: 可能需要管理员权限，请以管理员身份运行或手动执行安装命令。"
+                    "\n Tip: Administrator rights may be required, please run as an administrator or execute the installation command manually."
                 } else {
                     ""
                 };
-                format!("{} 安装失败 (退出码: {:?})，请查看输出日志或手动安装。{}", engine, output.status.code(), hint)
+                format!("{} Installation failed (exit code: {:?}), please check the output log or install manually. {}", engine, output.status.code(), hint)
             };
 
             Ok(Json(OcrInstallResponse {
@@ -675,7 +675,7 @@ async fn ocr_install(
             package_manager: pm.into(),
             output: e.to_string(),
             exit_code: None,
-            message: format!("执行安装命令失败: {}。请检查 {} 是否已正确安装。", e, pm),
+            message: format!("Failed to execute the installation command: {}. Please check if {} is installed correctly.", e, pm),
         })),
         Err(_) => {
             tracing::warn!(engine, "OCR install timed out after 10 minutes");
@@ -683,10 +683,10 @@ async fn ocr_install(
                 success: false,
                 engine: engine.into(),
                 package_manager: pm.into(),
-                output: "安装命令执行超时 (10 分钟)。".into(),
+                output: "Installation command execution timed out (10 minutes).".into(),
                 exit_code: None,
                 message: format!(
-                    "{} 安装超时。可能原因：网络慢、包管理器锁、需要管理员权限。\n建议手动执行安装命令。",
+                    "{} Installation timed out. Possible reasons: slow network, package manager lock, administrator rights required. \n recommends executing the installation command manually.",
                     engine
                 ),
             }))
@@ -764,7 +764,7 @@ async fn ocr_install_start(
         ),
         _ => {
             return Err(AppError::BadRequest(format!(
-                "不支持的安装组合: engine={}, pm={}, platform={}", engine, pm, platform
+                "Unsupported installation combinations: engine={}, pm={}, platform={}", engine, pm, platform
             )));
         }
     };
@@ -817,7 +817,7 @@ async fn ocr_install_start(
                     t.status = OcrTaskStatus::Failed;
                     t.finished_at = Some(chrono::Utc::now().to_rfc3339());
                     t.log_lines.push(format!("Failed to start process: {}", e));
-                    t.message = Some(format!("执行安装命令失败: {}", e));
+                    t.message = Some(format!("Failed to execute the installation command: {}", e));
                 }
                 return;
             }
@@ -894,11 +894,11 @@ async fn ocr_install_start(
 
                     if success {
                         t.status = OcrTaskStatus::Completed;
-                        t.log_lines.push("安装命令执行完成，正在验证...".to_string());
+                        t.log_lines.push("The installation command is completed and is being verified...".to_string());
                     } else {
                         t.status = OcrTaskStatus::Failed;
                         t.message = Some(format!(
-                            "{} 安装失败 (退出码: {:?})，请查看日志或手动安装。",
+                            "{} installation failed (exit code: {:?}), please check the log or install manually.",
                             eng, exit_status.code()
                         ));
                     }
@@ -906,12 +906,12 @@ async fn ocr_install_start(
                 Ok(Err(e)) => {
                     t.status = OcrTaskStatus::Failed;
                     t.log_lines.push(format!("Process error: {}", e));
-                    t.message = Some(format!("安装进程异常: {}", e));
+                    t.message = Some(format!("Abnormal installation process: {}", e));
                 }
                 Err(_) => {
                     t.status = OcrTaskStatus::Failed;
                     t.log_lines.push("Installation timed out after 10 minutes.".to_string());
-                    t.message = Some(format!("{} 安装超时 (10 分钟)。建议手动安装。", eng));
+                    t.message = Some(format!("{} Installation timed out (10 minutes). It is recommended to install manually.", eng));
                 }
             }
         }
@@ -937,18 +937,18 @@ async fn ocr_install_start(
                     if ok {
                         let ver_str = ver.unwrap_or_default();
                         let path_str = path.unwrap_or_default();
-                        t.log_lines.push(format!("验证成功: {} v{} ({})", check_name, ver_str, path_str));
+                        t.log_lines.push(format!("Verification successful: {} v{} ({})", check_name, ver_str, path_str));
                         t.message = Some(format!(
-                            "{} 安装并验证成功！版本: {}",
+                            "{} installed and verified successfully! Version: {}",
                             eng, ver_str
                         ));
                     } else {
                         t.log_lines.push(format!(
-                            "警告: 安装命令执行成功，但 {} 仍不可用。可能需要重启终端或将其添加到 PATH。",
+                            "Warning: The installation command executed successfully, but {} is still unavailable. You may need to restart the terminal or add it to PATH.",
                             check_name
                         ));
                         t.message = Some(format!(
-                            "{} 安装命令已完成，但验证未通过。建议重启应用后重新检测。",
+                            "{} The installation command completed, but verification failed. It is recommended to restart the application and recheck.",
                             eng
                         ));
                     }
@@ -1033,7 +1033,7 @@ async fn ocr_install_cancel(
     if task.status != OcrTaskStatus::Running {
         return Ok(Json(OcrCancelResponse {
             success: false,
-            message: format!("任务已不在运行状态 ({})", serde_json::to_string(&task.status).unwrap_or_default()),
+            message: format!("The task is no longer running ({})", serde_json::to_string(&task.status).unwrap_or_default()),
         }));
     }
 
@@ -1054,11 +1054,11 @@ async fn ocr_install_cancel(
     task.status = OcrTaskStatus::Cancelled;
     task.finished_at = Some(chrono::Utc::now().to_rfc3339());
     task.log_lines.push("Installation cancelled by user.".to_string());
-    task.message = Some("安装已被用户取消。".to_string());
+    task.message = Some("The installation was canceled by the user.".to_string());
 
     Ok(Json(OcrCancelResponse {
         success: true,
-        message: "安装已取消".to_string(),
+        message: "Installation canceled".to_string(),
     }))
 }
 

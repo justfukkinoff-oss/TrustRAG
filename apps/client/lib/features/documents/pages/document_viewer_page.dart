@@ -134,8 +134,8 @@ class _DocumentViewerPageState extends ConsumerState<DocumentViewerPage>
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
-            Tab(text: '文档内容'),
-            Tab(text: '分块索引'),
+            Tab(text: 'Document content'),
+            Tab(text: 'block index'),
           ],
         ),
       ),
@@ -162,7 +162,7 @@ class _DocumentViewerPageState extends ConsumerState<DocumentViewerPage>
             children: [
               Icon(Icons.error_outline, size: 48, color: Colors.red.shade300),
               const SizedBox(height: 12),
-              Text('无法加载文档内容', style: TextStyle(color: Colors.grey.shade600)),
+              Text('Unable to load document content', style: TextStyle(color: Colors.grey.shade600)),
               const SizedBox(height: 8),
               Text(_markdownError!,
                   textAlign: TextAlign.center,
@@ -176,7 +176,7 @@ class _DocumentViewerPageState extends ConsumerState<DocumentViewerPage>
                   });
                   _loadMarkdown();
                 },
-                child: const Text('重试'),
+                child: const Text('Try again'),
               ),
             ],
           ),
@@ -185,7 +185,7 @@ class _DocumentViewerPageState extends ConsumerState<DocumentViewerPage>
     }
     if (_markdownContent == null || _markdownContent!.isEmpty) {
       return Center(
-        child: Text('文档内容为空', style: TextStyle(color: Colors.grey.shade500)),
+        child: Text('Document content is empty', style: TextStyle(color: Colors.grey.shade500)),
       );
     }
     return Markdown(
@@ -206,7 +206,7 @@ class _DocumentViewerPageState extends ConsumerState<DocumentViewerPage>
                 child: TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
-                    hintText: '搜索分块内容...',
+                    hintText: 'Search chunked content...',
                     prefixIcon: const Icon(Icons.search, size: 20),
                     isDense: true,
                     contentPadding: const EdgeInsets.symmetric(vertical: 10),
@@ -229,7 +229,7 @@ class _DocumentViewerPageState extends ConsumerState<DocumentViewerPage>
               ),
               const SizedBox(width: 12),
               Text(
-                '$_chunkTotal 个分块',
+                '$_chunkTotal chunks',
                 style: TextStyle(
                   fontSize: 13,
                   color: Colors.grey.shade600,
@@ -243,10 +243,10 @@ class _DocumentViewerPageState extends ConsumerState<DocumentViewerPage>
           child: _loadingChunks
               ? const Center(child: CircularProgressIndicator())
               : _chunksError != null
-                  ? Center(child: Text('加载失败: $_chunksError'))
+                  ? Center(child: Text('Loading failed: $_chunksError'))
                   : _filteredChunks.isEmpty
                       ? Center(
-                          child: Text('无匹配分块',
+                          child: Text('No matching chunk',
                               style: TextStyle(color: Colors.grey.shade500)))
                       : ListView.builder(
                           controller: _chunkScrollController,
@@ -268,7 +268,7 @@ class _DocumentViewerPageState extends ConsumerState<DocumentViewerPage>
                       : null,
                   icon: const Icon(Icons.chevron_left),
                 ),
-                Text('第 $_chunkPage / ${(_chunkTotal / _chunkPerPage).ceil()} 页',
+                Text('Page $_chunkPage / ${(_chunkTotal / _chunkPerPage).ceil()}',
                     style: const TextStyle(fontSize: 13)),
                 IconButton(
                   onPressed:
@@ -322,7 +322,7 @@ class _DocumentViewerPageState extends ConsumerState<DocumentViewerPage>
           ),
         ),
         title: Text(
-          headingPath ?? '分块 ${chunkIndex + 1}',
+          headingPath ?? 'Chunking ${chunkIndex + 1}',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),

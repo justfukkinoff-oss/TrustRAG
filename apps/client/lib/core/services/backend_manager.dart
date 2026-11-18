@@ -81,8 +81,8 @@ class BackendManager {
     debugPrint('[BackendManager] Data dir: $dataDir');
     debugPrint('[BackendManager] Account: ${accountId ?? "default"}');
     debugPrint('[BackendManager] Binary: $backendPath');
-    DebugLogBuffer().add('BACKEND 启动中 port=$_port account=${accountId ?? "default"}');
-    DebugLogBuffer().add('BACKEND 数据目录: $dataDir');
+    DebugLogBuffer().add('BACKEND is starting port=$_port account=${accountId ?? "default"}');
+    DebugLogBuffer().add('BACKEND data directory: $dataDir');
 
     final stderrLines = <String>[];
 
@@ -124,7 +124,7 @@ class BackendManager {
               ? lastLines.join('\n')
               : _diagnoseExitCode(code, backendPath);
           _startupError = 'Backend exited with code $code.\n$detail';
-          DebugLogBuffer().add('ERROR BACKEND 异常退出 code=$code');
+          DebugLogBuffer().add('ERROR BACKEND abnormal exit code=$code');
           if (!_readyCompleter.isCompleted) _readyCompleter.complete();
         }
       });
@@ -146,8 +146,8 @@ class BackendManager {
       _isRunning = await _healthCheck();
       debugPrint('[BackendManager] Health check result: $_isRunning');
       DebugLogBuffer().add(_isRunning
-          ? 'BACKEND 健康检查通过，端口 $_port'
-          : 'ERROR BACKEND 健康检查失败');
+          ? 'BACKEND health check passed, port $_port'
+          : 'ERROR BACKEND health check failed');
       if (!_isRunning && _startupError == null) {
         final detail = stderrLines.isNotEmpty
             ? stderrLines.last
@@ -161,7 +161,7 @@ class BackendManager {
   /// the given account's isolated data directory.
   Future<void> restart({String? accountId}) async {
     debugPrint('[BackendManager] Restarting for account: ${accountId ?? "default"}');
-    DebugLogBuffer().add('BACKEND 重启中，切换账号: ${accountId ?? "default"}');
+    DebugLogBuffer().add('BACKEND Restarting, switching account: ${accountId ?? "default"}');
     await stop();
     _readyCompleter = Completer<void>();
     _startupError = null;
@@ -179,7 +179,7 @@ class BackendManager {
     final dir = Directory(await getAccountDataDir(accountId));
     if (await dir.exists()) {
       debugPrint('[BackendManager] Deleting data for account: $accountId');
-      DebugLogBuffer().add('BACKEND 删除账号数据: $accountId');
+      DebugLogBuffer().add('BACKEND Delete account data: $accountId');
       await dir.delete(recursive: true);
       return true;
     }
@@ -318,22 +318,22 @@ class BackendManager {
     final buf = StringBuffer();
 
     if (Platform.isWindows && (code == -1 || code == 0xC0000135 || code == 0xC000007B)) {
-      buf.writeln('可能原因: 缺少 Visual C++ 运行时库 (VCRUNTIME140.dll)');
-      buf.writeln('请安装 Microsoft Visual C++ Redistributable:');
+      buf.writeln('Possible cause: Missing Visual C++ runtime library (VCRUNTIME140.dll)');
+      buf.writeln('Please install Microsoft Visual C++ Redistributable:');
       buf.writeln('https://aka.ms/vs/17/release/vc_redist.x64.exe');
       buf.writeln('');
-      buf.writeln('或者尝试在 cmd 中手动运行:');
+      buf.writeln('Or try running it manually in cmd:');
       buf.writeln('  $binaryPath');
-      buf.writeln('查看 Windows 的具体错误提示。');
+      buf.writeln('Check Windows for specific error messages.');
     } else if (code == -1 || code == 255) {
-      buf.writeln('后端进程异常终止 (信号或依赖缺失)。');
-      buf.writeln('请在终端中手动运行后端查看详细错误:');
+      buf.writeln('The backend process terminated abnormally (signal or dependency missing).');
+      buf.writeln('Please run the backend manually in the terminal to view detailed errors:');
       buf.writeln('  $binaryPath');
     } else if (code == 101) {
-      buf.writeln('后端发生 Rust panic，请检查日志。');
+      buf.writeln('Rust panic occurred in the backend, please check the logs.');
     } else {
-      buf.writeln('后端异常退出，未捕获到错误输出。');
-      buf.writeln('请在终端中手动运行后端查看详细错误。');
+      buf.writeln('The backend exited abnormally and no error output was captured.');
+      buf.writeln('Please run the backend manually in the terminal to view detailed errors.');
     }
 
     return buf.toString().trim();

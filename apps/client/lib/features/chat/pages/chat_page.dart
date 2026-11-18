@@ -107,7 +107,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       final truncatedMsg = ChatMessage(
         id: 'truncated-${DateTime.now().millisecondsSinceEpoch}',
         role: 'assistant',
-        content: '$_streamingContent\n\n---\n*回答已中断*',
+        content: '${_streamingContent}\n\n---\n*Answer has been interrupted*',
         citations: List.from(_streamingCitations),
         createdAt: DateTime.now(),
       );
@@ -160,13 +160,13 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     setState(() {
       _isSending = true;
       _streamingContent = '';
-      _streamingPhase = '正在连接...';
+      _streamingPhase = 'Connecting...';
       _streamingCitations = [];
     });
 
     _scrollToBottom();
 
-    DebugLogBuffer().add('CHAT 发送消息: ${userText.length > 50 ? '${userText.substring(0, 50)}...' : userText}');
+    DebugLogBuffer().add('CHAT Send message: ${userText.length > 50 ? '${userText.substring(0, 50)}...' : userText}');
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token') ?? '';
@@ -196,7 +196,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       _firstTokenTimer = Timer(const Duration(seconds: 30), () {
         if (_isSending && _streamingContent.isEmpty && mounted) {
           setState(() {
-            _streamingPhase = '后端响应超时 (30s)，请检查 LLM 配置或重试';
+            _streamingPhase = 'Backend response timed out (30s), please check LLM configuration or try again';
           });
         }
       });
@@ -209,7 +209,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           throw Exception('HTTP ${response.statusCode}: $body');
         }
 
-        if (mounted) setState(() => _streamingPhase = '正在检索资料库...');
+        if (mounted) setState(() => _streamingPhase = 'Searching database...');
 
         String assistantId = '';
         String currentEventType = '';
@@ -236,7 +236,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('AI 错误: $jsonStr'),
+                    content: Text('AI Error: $jsonStr'),
                     backgroundColor: Colors.red,
                     duration: const Duration(seconds: 6),
                   ),
@@ -249,14 +249,14 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               final event = jsonDecode(jsonStr);
               if (eventType == 'message_start') {
                 assistantId = event['message_id'] ?? '';
-                if (mounted) setState(() => _streamingPhase = '正在分析问题...');
+                if (mounted) setState(() => _streamingPhase = 'Analyzing the problem...');
               } else if (eventType == 'retrieval_started') {
-                if (mounted) setState(() => _streamingPhase = '正在检索资料库...');
+                if (mounted) setState(() => _streamingPhase = 'Searching database...');
               } else if (eventType == 'retrieval_finished') {
                 final count = event['sources_count'] ?? 0;
-                if (mounted) setState(() => _streamingPhase = '已检索到 $count 条相关资料');
+                if (mounted) setState(() => _streamingPhase = 'Found $count relevant sources');
               } else if (eventType == 'llm_started') {
-                if (mounted) setState(() => _streamingPhase = '正在生成回答...');
+                if (mounted) setState(() => _streamingPhase = 'Generating answer...');
               } else if (eventType == 'citation') {
                 setState(() {
                   _streamingCitations.add(Citation.fromJson(event));
@@ -339,17 +339,17 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       if (_streamingContent.isEmpty && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('AI 未返回任何内容，请检查 LLM 模型配置和资料库状态'),
+            content: Text('AI returned nothing, please check LLM model configuration and repository status'),
             backgroundColor: Colors.orange,
             duration: Duration(seconds: 5),
           ),
         );
       }
     } catch (e) {
-      DebugLogBuffer().add('ERROR CHAT 发送失败: $e');
+      DebugLogBuffer().add('ERROR CHAT failed to send: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('发送失败: $e'),
+          content: Text('Sending failed: $e'),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 5),
         ));
@@ -358,7 +358,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       _firstTokenTimer?.cancel();
       _firstTokenTimer = null;
       _activeClient = null;
-      DebugLogBuffer().add('CHAT 流式响应结束，引用数: ${_streamingCitations.length}');
+      DebugLogBuffer().add('CHAT streaming response ended, reference number: ${_streamingCitations.length}');
       if (mounted) {
         setState(() {
           _isSending = false;
@@ -407,7 +407,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     if (ws == null) {
       return Center(
         child:
-            Text('请先选择工作区', style: TextStyle(color: Colors.grey.shade500)),
+            Text('Select a workspace first', style: TextStyle(color: Colors.grey.shade500)),
       );
     }
 
@@ -445,7 +445,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           actions: [
             IconButton(
               icon: const Icon(Icons.add, size: 22),
-              tooltip: '新对话',
+              tooltip: 'New chat',
               onPressed: () {
                 ref.read(selectedConversationProvider.notifier).state = null;
                 ref.read(messagesProvider.notifier).state = [];
@@ -510,7 +510,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                 if (_isCompact) Navigator.of(context).pop();
               },
               icon: const Icon(Icons.add, size: 18),
-              label: const Text('新对话'),
+              label: const Text('New chat'),
             ),
           ),
         ),
@@ -522,7 +522,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
             data: (list) {
               if (list.isEmpty) {
                 return Center(
-                  child: Text('暂无对话',
+                  child: Text('No chats yet',
                       style: TextStyle(color: Colors.grey.shade500)),
                 );
               }
@@ -561,7 +561,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
             data: (list) {
               if (list.length <= 1) return const SizedBox.shrink();
               return PopupMenuButton<String>(
-                tooltip: '切换工作区',
+                tooltip: 'Switch workspace',
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
                 icon: Icon(Icons.unfold_more, size: 16, color: Colors.grey.shade600),
@@ -634,15 +634,15 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       padding: const EdgeInsets.symmetric(vertical: 4),
       children: [
         if (todayList.isNotEmpty) ...[
-          _buildGroupHeader('今天'),
+          _buildGroupHeader('today'),
           ...todayList.map((c) => _buildConvTile(c, ws, selectedConv)),
         ],
         if (yesterdayList.isNotEmpty) ...[
-          _buildGroupHeader('昨天'),
+          _buildGroupHeader('yesterday'),
           ...yesterdayList.map((c) => _buildConvTile(c, ws, selectedConv)),
         ],
         if (earlierList.isNotEmpty) ...[
-          _buildGroupHeader('更早'),
+          _buildGroupHeader('earlier'),
           ...earlierList.map((c) => _buildConvTile(c, ws, selectedConv)),
         ],
       ],
@@ -675,7 +675,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           .withValues(alpha: 0.3),
       leading: const Icon(Icons.chat_bubble_outline, size: 16),
       title: Text(
-        conv.title ?? '对话',
+        conv.title ?? 'Chat',
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: const TextStyle(fontSize: 13),
@@ -701,13 +701,13 @@ class _ChatPageState extends ConsumerState<ChatPage> {
         children: [
           Icon(Icons.auto_awesome, size: 64, color: Colors.grey.shade300),
           const SizedBox(height: 16),
-          Text('开始一段新对话',
+          Text('Start a new conversation',
               style: Theme.of(context)
                   .textTheme
                   .headlineSmall
                   ?.copyWith(color: Colors.grey)),
           const SizedBox(height: 8),
-          Text('基于你的文档进行 AI 问答',
+          Text('AI Q&A based on your documents',
               style: TextStyle(color: Colors.grey.shade500)),
         ],
       ),
@@ -866,24 +866,24 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _actionBtn(Icons.copy_rounded, '复制', iconColor, iconSize, btnPadding, () {
+          _actionBtn(Icons.copy_rounded, 'Copy', iconColor, iconSize, btnPadding, () {
             Clipboard.setData(ClipboardData(text: msg.content));
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('已复制'), duration: Duration(seconds: 1)),
+              const SnackBar(content: Text('Copied'), duration: Duration(seconds: 1)),
             );
           }),
           if (!isUser) ...[
             const SizedBox(width: 2),
-            _actionBtn(Icons.refresh_rounded, '重试', iconColor, iconSize, btnPadding, () {
+            _actionBtn(Icons.refresh_rounded, 'Try again', iconColor, iconSize, btnPadding, () {
               _retryMessage(msg);
             }),
             const SizedBox(width: 2),
-            _actionBtn(Icons.bug_report_outlined, '复制诊断信息', iconColor, iconSize, btnPadding, () {
+            _actionBtn(Icons.bug_report_outlined, 'Copy diagnostic information', iconColor, iconSize, btnPadding, () {
               _copyDiagnostics(msg);
             }),
           ],
           const SizedBox(width: 2),
-          _actionBtn(Icons.edit_rounded, '编辑', iconColor, iconSize, btnPadding, () {
+          _actionBtn(Icons.edit_rounded, 'Edit', iconColor, iconSize, btnPadding, () {
             _editMessage(msg);
           }),
         ],
@@ -922,20 +922,20 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('编辑消息'),
+        title: const Text('Edit message'),
         content: TextField(
           controller: editController,
           maxLines: 8,
           minLines: 3,
           decoration: const InputDecoration(
             border: OutlineInputBorder(),
-            hintText: '编辑消息内容...',
+            hintText: 'Edit message content...',
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('取消'),
+            child: const Text('Cancel'),
           ),
           if (msg.role == 'user')
             FilledButton(
@@ -948,7 +948,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                 _controller.text = editController.text;
                 _sendMessage();
               },
-              child: const Text('重新发送'),
+              child: const Text('Resend'),
             )
           else
             FilledButton(
@@ -956,10 +956,10 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                 Navigator.pop(ctx);
                 Clipboard.setData(ClipboardData(text: editController.text));
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('已复制编辑内容'), duration: Duration(seconds: 1)),
+                  const SnackBar(content: Text('Edit copied'), duration: Duration(seconds: 1)),
                 );
               },
-              child: const Text('复制'),
+              child: const Text('Copy'),
             ),
         ],
       ),
@@ -1007,7 +1007,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
 
     Clipboard.setData(ClipboardData(text: buf.toString()));
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('诊断信息已复制'), duration: Duration(seconds: 2)),
+      const SnackBar(content: Text('Diagnostic information copied'), duration: Duration(seconds: 2)),
     );
   }
 
@@ -1208,7 +1208,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        _streamingPhase.isNotEmpty ? _streamingPhase : '思考中...',
+                        _streamingPhase.isNotEmpty ? _streamingPhase : 'Thinking...',
                         style: TextStyle(color: Colors.grey.shade500),
                       ),
                     ],
@@ -1293,7 +1293,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                           maxLines: 4,
                           textInputAction: TextInputAction.newline,
                           decoration: InputDecoration(
-                            hintText: '输入你的问题...',
+                            hintText: 'Enter your question...',
                             filled: true,
                             fillColor:
                                 Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -1315,7 +1315,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                         backgroundColor: Colors.red.shade400,
                       ),
                       icon: const Icon(Icons.stop_rounded, color: Colors.white),
-                      tooltip: '停止生成',
+                      tooltip: 'Stop generating',
                     )
                   else
                     IconButton.filled(
@@ -1334,8 +1334,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                       child: Text(
                         sendMode == SendMode.enter
-                            ? 'Enter 发送'
-                            : 'Ctrl+Enter 发送',
+                            ? 'Enter to send'
+                            : 'Ctrl+Enter to send',
                         style: TextStyle(
                           fontSize: 11,
                           color: Colors.grey.shade500,
@@ -1400,7 +1400,7 @@ class _CitationDetailDialogState
     if (widget.citation.id.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('引用ID未就绪，请稍后重试')),
+          const SnackBar(content: Text('Reference ID is not ready, please try again later')),
         );
       }
       return;
@@ -1413,7 +1413,7 @@ class _CitationDetailDialogState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('审核提交失败: $e')),
+          SnackBar(content: Text('Review submission failed: $e')),
         );
       }
     } finally {
@@ -1426,19 +1426,19 @@ class _CitationDetailDialogState
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(status == 'rejected' ? '标记为错误' : '标记为存疑'),
+        title: Text(status == 'rejected' ? 'Mark as incorrect' : 'Flag for review'),
         content: TextField(
           controller: commentCtrl,
           maxLines: 3,
           decoration: const InputDecoration(
-            labelText: '备注（可选）',
+            labelText: 'Remarks (optional)',
             border: OutlineInputBorder(),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('取消'),
+            child: const Text('Cancel'),
           ),
           FilledButton(
             onPressed: () {
@@ -1448,7 +1448,7 @@ class _CitationDetailDialogState
                       ? null
                       : commentCtrl.text);
             },
-            child: const Text('确认'),
+            child: const Text('Confirm'),
           ),
         ],
       ),
@@ -1471,13 +1471,13 @@ class _CitationDetailDialogState
   String _statusLabel(String status) {
     switch (status) {
       case 'approved':
-        return '已通过';
+        return 'Approved';
       case 'rejected':
-        return '已拒绝';
+        return 'Rejected';
       case 'flagged':
-        return '存疑';
+        return 'Flagged';
       case 'pending':
-        return '待审核';
+        return 'Pending review';
       default:
         return status;
     }
@@ -1510,7 +1510,7 @@ class _CitationDetailDialogState
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              c.heading ?? '引用 ${c.index}',
+              c.heading ?? 'Citation ${c.index}',
               style: const TextStyle(fontSize: 16),
             ),
           ),
@@ -1530,12 +1530,12 @@ class _CitationDetailDialogState
                     Icon(Icons.description_outlined,
                         size: 16, color: theme.colorScheme.onSurfaceVariant),
                     const SizedBox(width: 4),
-                    Text('第 ${c.page} 页',
+                    Text('Page ${c.page}',
                         style: TextStyle(
                             color: theme.colorScheme.onSurfaceVariant, fontSize: 13)),
                     const Spacer(),
                     Text(
-                        '相关度: ${(c.score * 100).toStringAsFixed(1)}%',
+                        'Relevance: ${(c.score * 100).toStringAsFixed(1)}%',
                         style: TextStyle(
                           color: theme.colorScheme.primary,
                           fontSize: 13,
@@ -1556,7 +1556,7 @@ class _CitationDetailDialogState
               ),
             ),
             const SizedBox(height: 16),
-            Text('审核操作',
+            Text('Review operations',
                 style: theme.textTheme.labelLarge
                     ?.copyWith(fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
@@ -1564,7 +1564,7 @@ class _CitationDetailDialogState
               children: [
                 _ReviewActionButton(
                   icon: Icons.check_circle_outline,
-                  label: '通过',
+                  label: 'Approve',
                   color: Colors.green,
                   loading: _submitting,
                   onTap: () => _submitReview('approved'),
@@ -1572,7 +1572,7 @@ class _CitationDetailDialogState
                 const SizedBox(width: 8),
                 _ReviewActionButton(
                   icon: Icons.cancel_outlined,
-                  label: '错误',
+                  label: 'Incorrect',
                   color: Colors.red,
                   loading: _submitting,
                   onTap: () => _showReviewCommentDialog('rejected'),
@@ -1580,7 +1580,7 @@ class _CitationDetailDialogState
                 const SizedBox(width: 8),
                 _ReviewActionButton(
                   icon: Icons.flag_outlined,
-                  label: '存疑',
+                  label: 'Flagged',
                   color: Colors.orange,
                   loading: _submitting,
                   onTap: () => _showReviewCommentDialog('flagged'),
@@ -1598,7 +1598,7 @@ class _CitationDetailDialogState
               )
             else if (_reviews != null && _reviews!.isNotEmpty) ...[
               const SizedBox(height: 12),
-              Text('审核记录',
+              Text('Audit records',
                   style: theme.textTheme.labelMedium
                       ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
               const SizedBox(height: 4),
@@ -1669,11 +1669,11 @@ class _CitationDetailDialogState
               }
             },
             icon: const Icon(Icons.open_in_new, size: 16),
-            label: const Text('查看原文'),
+            label: const Text('View original text'),
           ),
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('关闭'),
+          child: const Text('close'),
         ),
       ],
     );
@@ -1770,7 +1770,7 @@ class _CitationPanelState extends ConsumerState<_CitationPanel> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('审核提交失败: $e')),
+          SnackBar(content: Text('Review submission failed: $e')),
         );
       }
     } finally {
@@ -1783,19 +1783,19 @@ class _CitationPanelState extends ConsumerState<_CitationPanel> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(status == 'rejected' ? '标记为错误' : '标记为存疑'),
+        title: Text(status == 'rejected' ? 'Mark as incorrect' : 'Flag for review'),
         content: TextField(
           controller: commentCtrl,
           maxLines: 3,
           decoration: const InputDecoration(
-            labelText: '备注（可选）',
+            labelText: 'Remarks (optional)',
             border: OutlineInputBorder(),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('取消'),
+            child: const Text('Cancel'),
           ),
           FilledButton(
             onPressed: () {
@@ -1803,7 +1803,7 @@ class _CitationPanelState extends ConsumerState<_CitationPanel> {
               _submitReview(status,
                   comment: commentCtrl.text.isEmpty ? null : commentCtrl.text);
             },
-            child: const Text('确认'),
+            child: const Text('Confirm'),
           ),
         ],
       ),
@@ -1821,10 +1821,10 @@ class _CitationPanelState extends ConsumerState<_CitationPanel> {
 
   String _statusLabel(String status) {
     switch (status) {
-      case 'approved': return '已通过';
-      case 'rejected': return '已拒绝';
-      case 'flagged': return '存疑';
-      case 'pending': return '待审核';
+      case 'approved': return 'Approved';
+      case 'rejected': return 'Rejected';
+      case 'flagged': return 'Flagged';
+      case 'pending': return 'Pending review';
       default: return status;
     }
   }
@@ -1861,7 +1861,7 @@ class _CitationPanelState extends ConsumerState<_CitationPanel> {
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(c.heading ?? '引用 ${c.index}',
+                child: Text(c.heading ?? 'Citation ${c.index}',
                     style: const TextStyle(
                         fontSize: 14, fontWeight: FontWeight.w600),
                     maxLines: 2,
@@ -1870,7 +1870,7 @@ class _CitationPanelState extends ConsumerState<_CitationPanel> {
               IconButton(
                 icon: const Icon(Icons.close, size: 18),
                 onPressed: widget.onClose,
-                tooltip: '关闭',
+                tooltip: 'close',
               ),
             ],
           ),
@@ -1893,7 +1893,7 @@ class _CitationPanelState extends ConsumerState<_CitationPanel> {
                           Icon(Icons.description_outlined,
                               size: 16, color: theme.colorScheme.onSurfaceVariant),
                           const SizedBox(width: 4),
-                          Text('第 ${c.page} 页',
+                          Text('Page ${c.page}',
                               style: TextStyle(
                                   color: theme.colorScheme.onSurfaceVariant, fontSize: 13)),
                         ],
@@ -1904,7 +1904,7 @@ class _CitationPanelState extends ConsumerState<_CitationPanel> {
                         Icon(Icons.score, size: 16, color: theme.colorScheme.primary),
                         const SizedBox(width: 4),
                         Text(
-                            '相关度: ${(c.score * 100).toStringAsFixed(1)}%',
+                            'Relevance: ${(c.score * 100).toStringAsFixed(1)}%',
                             style: TextStyle(
                               color: theme.colorScheme.primary,
                               fontSize: 13,
@@ -1918,7 +1918,7 @@ class _CitationPanelState extends ConsumerState<_CitationPanel> {
                         children: [
                           Icon(Icons.format_list_numbered, size: 16, color: Colors.teal.shade400),
                           const SizedBox(width: 4),
-                          Text('向量排名: #${c.embeddingRank}',
+                          Text('Embedding rank: #${c.embeddingRank}',
                               style: TextStyle(color: Colors.teal.shade600, fontSize: 13)),
                         ],
                       ),
@@ -1928,7 +1928,7 @@ class _CitationPanelState extends ConsumerState<_CitationPanel> {
                         children: [
                           Icon(Icons.swap_vert, size: 16, color: Colors.deepPurple.shade300),
                           const SizedBox(width: 4),
-                          Text('重排分: ${(c.rerankScore! * 100).toStringAsFixed(1)}%',
+                          Text('Rerank score: ${(c.rerankScore! * 100).toStringAsFixed(1)}%',
                               style: TextStyle(color: Colors.deepPurple.shade500, fontSize: 13)),
                         ],
                       ),
@@ -1939,7 +1939,7 @@ class _CitationPanelState extends ConsumerState<_CitationPanel> {
               const SizedBox(height: 8),
               Text(c.text, style: const TextStyle(fontSize: 14, height: 1.6)),
               const SizedBox(height: 16),
-              Text('审核操作',
+              Text('Review operations',
                   style: theme.textTheme.labelLarge
                       ?.copyWith(fontWeight: FontWeight.w600)),
               const SizedBox(height: 8),
@@ -1947,7 +1947,7 @@ class _CitationPanelState extends ConsumerState<_CitationPanel> {
                 children: [
                   _ReviewActionButton(
                     icon: Icons.check_circle_outline,
-                    label: '通过',
+                    label: 'Approve',
                     color: Colors.green,
                     loading: _submitting,
                     onTap: () => _submitReview('approved'),
@@ -1955,7 +1955,7 @@ class _CitationPanelState extends ConsumerState<_CitationPanel> {
                   const SizedBox(width: 8),
                   _ReviewActionButton(
                     icon: Icons.cancel_outlined,
-                    label: '错误',
+                    label: 'Incorrect',
                     color: Colors.red,
                     loading: _submitting,
                     onTap: () => _showReviewCommentDialog('rejected'),
@@ -1963,7 +1963,7 @@ class _CitationPanelState extends ConsumerState<_CitationPanel> {
                   const SizedBox(width: 8),
                   _ReviewActionButton(
                     icon: Icons.flag_outlined,
-                    label: '存疑',
+                    label: 'Flagged',
                     color: Colors.orange,
                     loading: _submitting,
                     onTap: () => _showReviewCommentDialog('flagged'),
@@ -1981,7 +1981,7 @@ class _CitationPanelState extends ConsumerState<_CitationPanel> {
                 )
               else if (_reviews != null && _reviews!.isNotEmpty) ...[
                 const SizedBox(height: 12),
-                Text('审核记录',
+                Text('Audit records',
                     style: theme.textTheme.labelMedium
                         ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
                 const SizedBox(height: 4),
@@ -2038,7 +2038,7 @@ class _CitationPanelState extends ConsumerState<_CitationPanel> {
                     }
                   },
                   icon: const Icon(Icons.open_in_new, size: 16),
-                  label: const Text('查看原文'),
+                  label: const Text('View original text'),
                 ),
               ],
             ],

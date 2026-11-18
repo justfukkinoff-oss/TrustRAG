@@ -52,7 +52,7 @@ class _WorkspaceSearchPageState extends ConsumerState<WorkspaceSearchPage> {
       });
     } catch (e) {
       setState(() {
-        _error = '搜索失败: $e';
+        _error = 'Search failed: $e';
         _loading = false;
       });
     }
@@ -71,7 +71,7 @@ class _WorkspaceSearchPageState extends ConsumerState<WorkspaceSearchPage> {
 
     if (ws == null) {
       return Center(
-        child: Text('请先选择工作区',
+        child: Text('Select a workspace first',
             style: TextStyle(color: Colors.grey.shade500)),
       );
     }
@@ -87,11 +87,11 @@ class _WorkspaceSearchPageState extends ConsumerState<WorkspaceSearchPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('全局搜索',
+              Text('global search',
                   style: theme.textTheme.titleLarge
                       ?.copyWith(fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
-              Text('在「${ws.name}」的所有文档中搜索',
+              Text('Search all documents of "${ws.name}"',
                   style:
                       theme.textTheme.bodySmall?.copyWith(color: Colors.grey)),
               const SizedBox(height: 16),
@@ -101,7 +101,7 @@ class _WorkspaceSearchPageState extends ConsumerState<WorkspaceSearchPage> {
                     child: TextField(
                       controller: _searchController,
                       decoration: InputDecoration(
-                        hintText: '输入关键词或问题...',
+                        hintText: 'Enter a keyword or question...',
                         prefixIcon: const Icon(Icons.search),
                         filled: true,
                         fillColor:
@@ -123,7 +123,7 @@ class _WorkspaceSearchPageState extends ConsumerState<WorkspaceSearchPage> {
                             height: 20,
                             child:
                                 CircularProgressIndicator(strokeWidth: 2))
-                        : const Text('搜索'),
+                        : const Text('Search'),
                   ),
                 ],
               ),
@@ -147,8 +147,8 @@ class _WorkspaceSearchPageState extends ConsumerState<WorkspaceSearchPage> {
                       const SizedBox(height: 16),
                       Text(
                         _searchController.text.isEmpty
-                            ? '输入关键词开始搜索'
-                            : '未找到相关结果',
+                            ? 'Enter keywords to start searching'
+                            : 'No relevant results found',
                         style: TextStyle(color: Colors.grey.shade500),
                       ),
                     ],
@@ -193,8 +193,8 @@ class _WorkspaceSearchPageState extends ConsumerState<WorkspaceSearchPage> {
                                 Expanded(
                                   child: Text(
                                       docId.length > 8
-                                          ? '文档 ${docId.substring(0, 8)}...'
-                                          : '文档 $docId',
+                                          ? 'Document ${docId.substring(0, 8)}...'
+                                          : 'Document $docId',
                                       style: const TextStyle(
                                           fontWeight: FontWeight.w600,
                                           fontSize: 14)),
@@ -236,7 +236,7 @@ class _WorkspaceSearchPageState extends ConsumerState<WorkspaceSearchPage> {
                                           size: 14,
                                           color: Colors.grey.shade500),
                                       const SizedBox(width: 4),
-                                      Text('第 $page 页',
+                                      Text('Page $page',
                                           style: TextStyle(
                                               fontSize: 12,
                                               color:

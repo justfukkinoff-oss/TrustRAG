@@ -38,7 +38,7 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
       setState(() {
         _dbInfo = null;
         _loading = false;
-        _lastMessage = '无法获取数据库信息: $e';
+        _lastMessage = 'Unable to obtain database information: $e';
       });
     }
   }
@@ -48,15 +48,15 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
     try {
       final api = ref.read(apiClientProvider);
       final resp = await api.dio.post('/system/backup-db');
-      final path = resp.data['backup_path'] ?? '未知路径';
+      final path = resp.data['backup_path'] ?? 'unknown path';
       setState(() {
         _loading = false;
-        _lastMessage = '备份成功: $path';
+        _lastMessage = 'Backup successful: $path';
       });
     } catch (e) {
       setState(() {
         _loading = false;
-        _lastMessage = '备份失败: $e';
+        _lastMessage = 'Backup failed: $e';
       });
     }
   }
@@ -69,32 +69,32 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
           children: [
             Icon(Icons.warning_amber, color: Colors.red, size: 24),
             SizedBox(width: 8),
-            Text('确认重置数据库'),
+            Text('Confirm database reset'),
           ],
         ),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('此操作将：', style: TextStyle(fontWeight: FontWeight.w600)),
+            Text('This action will:', style: TextStyle(fontWeight: FontWeight.w600)),
             SizedBox(height: 8),
-            Text('1. 自动备份当前数据库'),
-            Text('2. 删除现有数据库'),
-            Text('3. 创建全新的空数据库'),
-            Text('4. 清除当前登录状态'),
+            Text('1. Automatically back up the current database'),
+            Text('2. Delete existing database'),
+            Text('3. Create a new empty database'),
+            Text('4. Clear current login status'),
             SizedBox(height: 12),
             Text(
-              '所有工作区、文档、对话记录和模型配置都将丢失。备份文件会保留在应用数据目录中。',
+              'All workspaces, documents, conversation records, and model configurations will be lost. Backup files remain in the application data directory.',
               style: TextStyle(color: Colors.red, fontSize: 13),
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('取消')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: FilledButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('确认重置'),
+            child: const Text('Confirm reset'),
           ),
         ],
       ),
@@ -108,7 +108,7 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
       await api.dio.post('/system/reset-db');
       setState(() {
         _loading = false;
-        _lastMessage = '数据库已重置。请重新登录。';
+        _lastMessage = 'The database has been reset. Please log in again.';
       });
       if (mounted) {
         ref.read(authProvider.notifier).logout(clearData: true);
@@ -116,7 +116,7 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
     } catch (e) {
       setState(() {
         _loading = false;
-        _lastMessage = '重置失败: $e';
+        _lastMessage = 'Reset failed: $e';
       });
     }
   }
@@ -125,14 +125,14 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('重置登录状态'),
-        content: const Text('将清除所有账号的登录状态（Token），您需要重新登录。\n账号数据目录不受影响。'),
+        title: const Text('Reset login status'),
+        content: const Text('This will sign out all accounts.\nYour account data will not be changed.'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('取消')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: FilledButton.styleFrom(backgroundColor: Colors.deepOrange),
-            child: const Text('确认重置'),
+            child: const Text('Confirm reset'),
           ),
         ],
       ),
@@ -158,31 +158,31 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
           children: [
             Icon(Icons.warning_amber, color: Colors.red.shade900, size: 24),
             const SizedBox(width: 8),
-            const Text('清除所有账号数据'),
+            const Text('Clear all account data'),
           ],
         ),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('此操作将：', style: TextStyle(fontWeight: FontWeight.w600)),
+            Text('This action will:', style: TextStyle(fontWeight: FontWeight.w600)),
             SizedBox(height: 8),
-            Text('1. 停止本地后端'),
-            Text('2. 删除所有账号的本地数据目录'),
-            Text('3. 清除所有登录状态和账号记录'),
+            Text('1. Stop the local backend'),
+            Text('2. Delete the local data directories of all accounts'),
+            Text('3. Clear all login status and account records'),
             SizedBox(height: 12),
             Text(
-              '所有账号的文档、对话记录、数据库都将被删除，且无法恢复。',
+              'All account documents, conversation records, and databases will be deleted and cannot be restored.',
               style: TextStyle(color: Colors.red, fontSize: 13),
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('取消')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: FilledButton.styleFrom(backgroundColor: Colors.red.shade900),
-            child: const Text('确认清除全部'),
+            child: const Text('Confirm clear all'),
           ),
         ],
       ),
@@ -204,7 +204,7 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
       await ApiClient.clearAllAccountData();
       setState(() {
         _loading = false;
-        _lastMessage = '所有账号数据已清除。';
+        _lastMessage = 'All account data has been cleared.';
       });
       if (mounted) {
         ref.read(authProvider.notifier).logout();
@@ -213,7 +213,7 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
     } catch (e) {
       setState(() {
         _loading = false;
-        _lastMessage = '清除失败: $e';
+        _lastMessage = 'Clear failed: $e';
       });
     }
   }
@@ -226,12 +226,12 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
       final valid = resp.data['valid'] == true;
       setState(() {
         _loading = false;
-        _lastMessage = valid ? 'Token 有效，用户状态正常' : 'Token 无效或用户不存在，建议重新登录';
+        _lastMessage = valid ? 'Token is valid and user status is normal' : 'The token is invalid or the user does not exist. It is recommended to log in again.';
       });
     } catch (e) {
       setState(() {
         _loading = false;
-        _lastMessage = 'Token 校验失败: $e';
+        _lastMessage = 'Token verification failed: $e';
       });
     }
   }
@@ -242,7 +242,7 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('本地数据管理'),
+        title: const Text('Local data management'),
       ),
       body: _loading && _dbInfo == null
           ? const Center(child: CircularProgressIndicator())
@@ -256,12 +256,12 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
                       width: double.infinity,
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: _lastMessage!.contains('失败') || _lastMessage!.contains('无效')
+                        color: _lastMessage!.contains('failed') || _lastMessage!.contains('invalid')
                             ? Colors.red.shade50
                             : Colors.green.shade50,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: _lastMessage!.contains('失败') || _lastMessage!.contains('无效')
+                          color: _lastMessage!.contains('failed') || _lastMessage!.contains('invalid')
                               ? Colors.red.shade200
                               : Colors.green.shade200,
                         ),
@@ -273,7 +273,7 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
                               _lastMessage!,
                               style: TextStyle(
                                 fontSize: 13,
-                                color: _lastMessage!.contains('失败') || _lastMessage!.contains('无效')
+                                color: _lastMessage!.contains('failed') || _lastMessage!.contains('invalid')
                                     ? Colors.red.shade800
                                     : Colors.green.shade800,
                               ),
@@ -284,10 +284,10 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
                             onPressed: () {
                               Clipboard.setData(ClipboardData(text: _lastMessage!));
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('已复制'), duration: Duration(seconds: 1)),
+                                const SnackBar(content: Text('Copied'), duration: Duration(seconds: 1)),
                               );
                             },
-                            tooltip: '复制信息',
+                            tooltip: 'Copy information',
                           ),
                           IconButton(
                             icon: const Icon(Icons.close, size: 16),
@@ -299,7 +299,7 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
                     const SizedBox(height: 16),
                   ],
 
-                  Text('数据库信息', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                  Text('Database information', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 12),
 
                   if (_dbInfo != null)
@@ -309,18 +309,18 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _infoRow('Schema 版本', '${_dbInfo!['schema_version'] ?? '未知'}'),
-                            _infoRow('数据库路径', '${_dbInfo!['db_path'] ?? '未知'}'),
-                            _infoRow('用户数', '${_dbInfo!['user_count'] ?? '?'}'),
-                            _infoRow('工作区数', '${_dbInfo!['workspace_count'] ?? '?'}'),
-                            _infoRow('文档数', '${_dbInfo!['document_count'] ?? '?'}'),
+                            _infoRow('Schema version', '${_dbInfo!['schema_version'] ?? 'Unknown'}'),
+                            _infoRow('Database path', '${_dbInfo!['db_path'] ?? 'Unknown'}'),
+                            _infoRow('Number of users', '${_dbInfo!['user_count'] ?? '?'}'),
+                            _infoRow('Number of work areas', '${_dbInfo!['workspace_count'] ?? '?'}'),
+                            _infoRow('Number of documents', '${_dbInfo!['document_count'] ?? '?'}'),
                             const SizedBox(height: 8),
                             Align(
                               alignment: Alignment.centerRight,
                               child: TextButton.icon(
                                 onPressed: _loadDbInfo,
                                 icon: const Icon(Icons.refresh, size: 16),
-                                label: const Text('刷新'),
+                                label: const Text('Refresh'),
                               ),
                             ),
                           ],
@@ -332,20 +332,20 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Text(
-                          '无法连接到本地后端或此功能仅在桌面模式可用',
+                          'Unable to connect to local backend or this feature is only available in desktop mode',
                           style: TextStyle(color: Colors.grey.shade600),
                         ),
                       ),
                     ),
 
                   const SizedBox(height: 24),
-                  Text('诊断工具', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                  Text('diagnostic tools', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 12),
 
                   _actionCard(
                     icon: Icons.verified_user,
-                    title: '校验登录状态',
-                    subtitle: '检查当前 Token 与数据库用户是否一致',
+                    title: 'Verify login status',
+                    subtitle: 'Check whether the current Token is consistent with the database user',
                     onTap: _validateToken,
                     color: Colors.blue,
                   ),
@@ -354,22 +354,22 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
 
                   _actionCard(
                     icon: Icons.backup,
-                    title: '备份数据库',
-                    subtitle: '创建当前数据库的备份副本',
+                    title: 'Back up database',
+                    subtitle: 'Create a backup copy of the current database',
                     onTap: _backupDb,
                     color: Colors.teal,
                   ),
 
                   const SizedBox(height: 24),
-                  Text('危险操作', style: theme.textTheme.titleMedium?.copyWith(
+                  Text('Dangerous operation', style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold, color: Colors.red,
                   )),
                   const SizedBox(height: 12),
 
                   _actionCard(
                     icon: Icons.delete_forever,
-                    title: '重置数据库',
-                    subtitle: '清除所有本地数据并重新初始化（会先自动备份）',
+                    title: 'Reset database',
+                    subtitle: 'Clear all local data and re-initialize (it will be automatically backed up first)',
                     onTap: _resetDb,
                     color: Colors.red,
                   ),
@@ -378,16 +378,16 @@ class _DataManagementPageState extends ConsumerState<DataManagementPage> {
                     const SizedBox(height: 8),
                     _actionCard(
                       icon: Icons.restart_alt,
-                      title: '重置登录状态',
-                      subtitle: '清除所有账号登录状态，重新开始',
+                      title: 'Reset login status',
+                      subtitle: 'Clear all account login status and start over',
                       onTap: _resetLoginState,
                       color: Colors.deepOrange,
                     ),
                     const SizedBox(height: 8),
                     _actionCard(
                       icon: Icons.cleaning_services,
-                      title: '清除所有账号数据',
-                      subtitle: '删除所有账号的本地数据目录和登录信息',
+                      title: 'Clear all account data',
+                      subtitle: 'Delete the local data directory and login information of all accounts',
                       onTap: _clearAllAccounts,
                       color: Colors.red.shade900,
                     ),

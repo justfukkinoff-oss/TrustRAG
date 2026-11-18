@@ -106,7 +106,7 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      expect(find.text('请先选择工作区'), findsOneWidget);
+      expect(find.text('Select a workspace first'), findsOneWidget);
     });
 
     testWidgets('compact mode (<600px): has AppBar with menu button',
@@ -133,7 +133,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(Drawer), findsOneWidget);
-      expect(find.text('新对话'), findsOneWidget);
+      expect(find.text('New chat'), findsOneWidget);
     });
 
     testWidgets('wide mode (>=600px): no AppBar, has VerticalDivider',
@@ -155,8 +155,8 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      expect(find.text('新对话'), findsOneWidget);
-      expect(find.text('暂无对话'), findsOneWidget);
+      expect(find.text('New chat'), findsOneWidget);
+      expect(find.text('No chats yet'), findsOneWidget);
     });
 
     testWidgets('compact mode: AppBar shows workspace name', (tester) async {

@@ -50,7 +50,7 @@ class _KnowledgeGraphPageState extends ConsumerState<KnowledgeGraphPage>
       if (taskId == null || taskId.isEmpty || total == 0) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(result['message'] as String? ?? '无文档可处理')),
+            SnackBar(content: Text(result['message'] as String? ?? 'No documents to process')),
           );
         }
         return;
@@ -64,7 +64,7 @@ class _KnowledgeGraphPageState extends ConsumerState<KnowledgeGraphPage>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('图谱生成失败: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Graph generation failed: $e'), backgroundColor: Colors.red),
         );
       }
     } finally {
@@ -93,7 +93,7 @@ class _KnowledgeGraphPageState extends ConsumerState<KnowledgeGraphPage>
         if (state == 'completed') {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('图谱生成完成: $entities 个实体, $relations 条关系')),
+              SnackBar(content: Text('Graph generated: $entities entities, $relations relationships')),
             );
             ref.invalidate(graphDataProvider);
             ref.invalidate(entityListProvider);
@@ -103,7 +103,7 @@ class _KnowledgeGraphPageState extends ConsumerState<KnowledgeGraphPage>
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('查询进度失败: $e'), backgroundColor: Colors.orange),
+            SnackBar(content: Text('Failed to query progress: $e'), backgroundColor: Colors.orange),
           );
         }
         return;
@@ -118,14 +118,14 @@ class _KnowledgeGraphPageState extends ConsumerState<KnowledgeGraphPage>
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('确认清空图谱'),
-        content: const Text('此操作将删除当前工作区的所有实体和关系数据，不可撤销。'),
+        title: const Text('Clear the knowledge graph?'),
+        content: const Text('This operation will delete all entity and relationship data in the current workspace and cannot be undone.'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('取消')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: FilledButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('确认清空'),
+            child: const Text('Confirm clearing'),
           ),
         ],
       ),
@@ -138,7 +138,7 @@ class _KnowledgeGraphPageState extends ConsumerState<KnowledgeGraphPage>
       await service.resetGraph(ws.id);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('图谱已清空')),
+          const SnackBar(content: Text('Knowledge graph cleared')),
         );
         ref.invalidate(graphDataProvider);
         ref.invalidate(entityListProvider);
@@ -146,7 +146,7 @@ class _KnowledgeGraphPageState extends ConsumerState<KnowledgeGraphPage>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('清空失败: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Clear failed: $e'), backgroundColor: Colors.red),
         );
       }
     }
@@ -212,7 +212,7 @@ class _KnowledgeGraphPageState extends ConsumerState<KnowledgeGraphPage>
                     ),
                   PopupMenuButton<String>(
                     icon: const Icon(Icons.more_vert),
-                    tooltip: '更多操作',
+                    tooltip: 'More actions',
                     onSelected: (value) {
                       switch (value) {
                         case 'generate':
@@ -236,8 +236,8 @@ class _KnowledgeGraphPageState extends ConsumerState<KnowledgeGraphPage>
                         enabled: !_isGenerating,
                         child: const ListTile(
                           leading: Icon(Icons.auto_fix_high),
-                          title: Text('生成知识图谱'),
-                          subtitle: Text('从所有文档抽取实体和关系', style: TextStyle(fontSize: 11)),
+                          title: Text('Generate knowledge graph'),
+                          subtitle: Text('Extract entities and relationships from all documents', style: TextStyle(fontSize: 11)),
                           dense: true,
                           contentPadding: EdgeInsets.zero,
                         ),
@@ -246,8 +246,8 @@ class _KnowledgeGraphPageState extends ConsumerState<KnowledgeGraphPage>
                         value: 'history',
                         child: ListTile(
                           leading: Icon(Icons.history),
-                          title: Text('生成历史'),
-                          subtitle: Text('查看历史生成记录和诊断信息', style: TextStyle(fontSize: 11)),
+                          title: Text('Build history'),
+                          subtitle: Text('View historical build records and diagnostic information', style: TextStyle(fontSize: 11)),
                           dense: true,
                           contentPadding: EdgeInsets.zero,
                         ),
@@ -256,7 +256,7 @@ class _KnowledgeGraphPageState extends ConsumerState<KnowledgeGraphPage>
                         value: 'refresh',
                         child: ListTile(
                           leading: Icon(Icons.refresh),
-                          title: Text('刷新图谱'),
+                          title: Text('Refresh graph'),
                           dense: true,
                           contentPadding: EdgeInsets.zero,
                         ),
@@ -266,7 +266,7 @@ class _KnowledgeGraphPageState extends ConsumerState<KnowledgeGraphPage>
                         value: 'reset',
                         child: ListTile(
                           leading: Icon(Icons.delete_forever, color: Colors.red),
-                          title: Text('清空图谱', style: TextStyle(color: Colors.red)),
+                          title: Text('Clear graph', style: TextStyle(color: Colors.red)),
                           dense: true,
                           contentPadding: EdgeInsets.zero,
                         ),
@@ -347,7 +347,7 @@ class _GraphViewTab extends ConsumerWidget {
                         ?.copyWith(color: Colors.grey)),
                 const SizedBox(height: 8),
                 Text(
-                  '点击下方按钮从文档中抽取实体和关系，生成知识图谱',
+                  'Click the button below to extract entities and relationships from the document and generate a knowledge graph',
                   style: TextStyle(color: Colors.grey.shade500),
                 ),
                 const SizedBox(height: 24),
@@ -359,11 +359,11 @@ class _GraphViewTab extends ConsumerWidget {
                           child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                         )
                       : const Icon(Icons.auto_fix_high),
-                  label: Text(isGenerating ? '生成中...' : '生成知识图谱'),
+                  label: Text(isGenerating ? 'Generating...' : 'Generate knowledge graph'),
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  '需要已配置 LLM 模型，将通过 LLM 从文档 chunk 中抽取实体与关系',
+                  'The LLM model needs to be configured, and entities and relationships will be extracted from document chunks through LLM',
                   style: TextStyle(color: Colors.grey.shade400, fontSize: 12),
                 ),
               ],
@@ -433,16 +433,16 @@ class _InteractiveGraphState extends ConsumerState<_InteractiveGraph> {
               children: [
                 Icon(Icons.filter_alt_outlined, size: 64, color: Colors.grey.shade300),
                 const SizedBox(height: 16),
-                Text('当前过滤条件下没有数据',
+                Text('There is no data under the current filter conditions',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey)),
                 const SizedBox(height: 8),
-                Text('尝试切换到「全部图层」或取消类型过滤',
+                Text('Try switching to "All Layers" or canceling type filtering',
                     style: TextStyle(color: Colors.grey.shade500, fontSize: 13)),
                 const SizedBox(height: 16),
                 OutlinedButton.icon(
                   onPressed: () => setState(() => _hiddenTypes.clear()),
                   icon: const Icon(Icons.visibility),
-                  label: const Text('显示全部类型'),
+                  label: const Text('Show all types'),
                 ),
               ],
             ),
@@ -658,18 +658,18 @@ class _InteractiveGraphState extends ConsumerState<_InteractiveGraph> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          title: const Text('编辑实体'),
+          title: const Text('Edit entity'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: nameCtl,
-                decoration: const InputDecoration(labelText: '实体名称'),
+                decoration: const InputDecoration(labelText: 'Entity name'),
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 value: entityTypes.contains(selectedType) ? selectedType : 'other',
-                decoration: const InputDecoration(labelText: '实体类型'),
+                decoration: const InputDecoration(labelText: 'Entity type'),
                 items: entityTypes
                     .map((t) => DropdownMenuItem(value: t, child: Text(t)))
                     .toList(),
@@ -678,7 +678,7 @@ class _InteractiveGraphState extends ConsumerState<_InteractiveGraph> {
             ],
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('取消')),
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
             FilledButton(
               onPressed: () async {
                 final wsId = _currentWorkspaceId;
@@ -695,12 +695,12 @@ class _InteractiveGraphState extends ConsumerState<_InteractiveGraph> {
                 } catch (e) {
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('更新失败: $e'), backgroundColor: Colors.red),
+                      SnackBar(content: Text('Update failed: $e'), backgroundColor: Colors.red),
                     );
                   }
                 }
               },
-              child: const Text('保存'),
+              child: const Text('save'),
             ),
           ],
         ),
@@ -712,10 +712,10 @@ class _InteractiveGraphState extends ConsumerState<_InteractiveGraph> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('删除实体'),
-        content: Text('确定删除实体「${node.label}」？\n关联的所有关系也将被删除，此操作不可撤销。'),
+        title: const Text('Delete entity'),
+        content: Text('Delete entity "${node.label}"?\nThis will also delete its relationships and cannot be undone.'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('取消')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () async {
@@ -734,18 +734,18 @@ class _InteractiveGraphState extends ConsumerState<_InteractiveGraph> {
                 if (mounted) {
                   final relCount = result['relations_removed'] ?? 0;
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('已删除实体「${node.label}」及 $relCount 条关系')),
+                    SnackBar(content: Text('The entity "${node.label}" and the relationship $relCount have been deleted')),
                   );
                 }
               } catch (e) {
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('删除失败: $e'), backgroundColor: Colors.red),
+                    SnackBar(content: Text('Delete failed: $e'), backgroundColor: Colors.red),
                   );
                 }
               }
             },
-            child: const Text('确认删除'),
+            child: const Text('Confirm deletion'),
           ),
         ],
       ),
@@ -761,18 +761,18 @@ class _InteractiveGraphState extends ConsumerState<_InteractiveGraph> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          title: const Text('编辑关系'),
+          title: const Text('Editing relationships'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: typeCtl,
-                decoration: const InputDecoration(labelText: '关系类型'),
+                decoration: const InputDecoration(labelText: 'Relationship type'),
               ),
               const SizedBox(height: 12),
               Row(
                 children: [
-                  Text('置信度: ${(weightValue * 100).toStringAsFixed(0)}%',
+                  Text('Confidence: ${(weightValue * 100).toStringAsFixed(0)}%',
                       style: const TextStyle(fontSize: 13)),
                   Expanded(
                     child: Slider(
@@ -789,15 +789,15 @@ class _InteractiveGraphState extends ConsumerState<_InteractiveGraph> {
               TextField(
                 controller: descCtl,
                 decoration: const InputDecoration(
-                  labelText: '描述（可选）',
-                  hintText: '关系的简短描述',
+                  labelText: 'Description (optional)',
+                  hintText: 'A short description of the relationship',
                 ),
                 maxLines: 2,
               ),
             ],
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('取消')),
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
             FilledButton(
               onPressed: () async {
                 final wsId = _currentWorkspaceId;
@@ -815,12 +815,12 @@ class _InteractiveGraphState extends ConsumerState<_InteractiveGraph> {
                 } catch (e) {
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('更新失败: $e'), backgroundColor: Colors.red),
+                      SnackBar(content: Text('Update failed: $e'), backgroundColor: Colors.red),
                     );
                   }
                 }
               },
-              child: const Text('保存'),
+              child: const Text('save'),
             ),
           ],
         ),
@@ -832,10 +832,10 @@ class _InteractiveGraphState extends ConsumerState<_InteractiveGraph> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('删除关系'),
-        content: Text('确定删除关系「${edge.relation}」？此操作不可撤销。'),
+        title: const Text('Delete relationship'),
+        content: Text('Are you sure you want to delete the relationship "${edge.relation}"? This action cannot be undone.'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('取消')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () async {
@@ -849,18 +849,18 @@ class _InteractiveGraphState extends ConsumerState<_InteractiveGraph> {
                 ref.invalidate(graphDataProvider);
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('关系已删除')),
+                    const SnackBar(content: Text('Relationship deleted')),
                   );
                 }
               } catch (e) {
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('删除失败: $e'), backgroundColor: Colors.red),
+                    SnackBar(content: Text('Delete failed: $e'), backgroundColor: Colors.red),
                   );
                 }
               }
             },
-            child: const Text('确认删除'),
+            child: const Text('Confirm deletion'),
           ),
         ],
       ),
@@ -1004,9 +1004,9 @@ class _GraphPainter extends CustomPainter {
 
 class _LayerToggleBar extends ConsumerWidget {
   static const _layerConfig = <String, (String, Color, IconData)>{
-    'document': ('文档网络', Colors.blue, Icons.description_outlined),
-    'semantic': ('语义图谱', Colors.green, Icons.hub_outlined),
-    'knowledge': ('知识图谱', Colors.deepPurple, Icons.psychology_outlined),
+    'document': ('document network', Colors.blue, Icons.description_outlined),
+    'semantic': ('Semantic graph', Colors.green, Icons.hub_outlined),
+    'knowledge': ('Knowledge graph', Colors.deepPurple, Icons.psychology_outlined),
   };
 
   @override
@@ -1099,7 +1099,7 @@ class _FilterableLegend extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('类型过滤', style: TextStyle(fontSize: 10, color: Colors.grey.shade500)),
+          Text('Type filtering', style: TextStyle(fontSize: 10, color: Colors.grey.shade500)),
           const SizedBox(height: 4),
           ...typeCounts.entries.take(10).map((entry) {
             final type = entry.key;
@@ -1242,15 +1242,15 @@ class _NodeInfoCard extends StatelessWidget {
             children: [
               Icon(Icons.arrow_downward, size: 12, color: Colors.green.shade400),
               const SizedBox(width: 2),
-              Text('入: $incomingCount', style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+              Text('Enter: $incomingCount', style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
               const SizedBox(width: 12),
               Icon(Icons.arrow_upward, size: 12, color: Colors.blue.shade400),
               const SizedBox(width: 2),
-              Text('出: $outgoingCount', style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+              Text('Out: $outgoingCount', style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
               const SizedBox(width: 12),
               Icon(Icons.link, size: 12, color: Colors.grey.shade500),
               const SizedBox(width: 2),
-              Text('共: ${related.length}', style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+              Text('Total: ${related.length}', style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
             ],
           ),
           if (node.documentId != null) ...[
@@ -1329,7 +1329,7 @@ class _NodeInfoCard extends StatelessWidget {
             if (related.length > 15)
               Padding(
                 padding: const EdgeInsets.only(top: 4),
-                child: Text('还有 ${related.length - 15} 条关系...',
+                child: Text('There are ${related.length - 15} relationships...',
                     style: TextStyle(fontSize: 10, color: Colors.grey.shade400)),
               ),
           ],
@@ -1381,7 +1381,7 @@ class _EdgeInfoCard extends StatelessWidget {
               Icon(Icons.link, size: 16, color: theme.colorScheme.primary),
               const SizedBox(width: 8),
               Expanded(
-                child: Text('关系详情',
+                child: Text('Relationship details',
                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
               ),
               if (onEdit != null)
@@ -1458,7 +1458,7 @@ class _EdgeInfoCard extends StatelessWidget {
           const SizedBox(height: 8),
           Row(
             children: [
-              Text('关系类型: ', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+              Text('Relationship type: ', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
@@ -1474,7 +1474,7 @@ class _EdgeInfoCard extends StatelessWidget {
             const SizedBox(height: 4),
             Row(
               children: [
-                Text('置信度: ', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                Text('Confidence: ', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
                 Expanded(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(4),
@@ -1507,7 +1507,7 @@ class _EdgeInfoCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('关系描述', style: TextStyle(
+                      Text('Relationship description', style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                         color: Colors.grey.shade700,
@@ -1528,7 +1528,7 @@ class _EdgeInfoCard extends StatelessWidget {
               children: [
                 Icon(Icons.description_outlined, size: 14, color: Colors.grey.shade500),
                 const SizedBox(width: 6),
-                Text('来源文档: ', style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+                Text('Source document: ', style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
                 Expanded(
                   child: Text(
                     edge.sourceDocumentId!.length > 8
@@ -1729,7 +1729,7 @@ class _EntityListTab extends ConsumerWidget {
               child: FloatingActionButton.small(
                 heroTag: 'addEntity',
                 onPressed: () => _showCreateEntityDialog(context, ref),
-                tooltip: '新增实体',
+                tooltip: 'Add new entity',
                 child: const Icon(Icons.add),
               ),
             ),
@@ -1748,19 +1748,19 @@ class _EntityListTab extends ConsumerWidget {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          title: const Text('新增实体'),
+          title: const Text('Add new entity'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: nameCtl,
-                decoration: const InputDecoration(labelText: '实体名称'),
+                decoration: const InputDecoration(labelText: 'Entity name'),
                 autofocus: true,
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 value: selectedType,
-                decoration: const InputDecoration(labelText: '实体类型'),
+                decoration: const InputDecoration(labelText: 'Entity type'),
                 items: entityTypes
                     .map((t) => DropdownMenuItem(value: t, child: Text(t)))
                     .toList(),
@@ -1769,7 +1769,7 @@ class _EntityListTab extends ConsumerWidget {
             ],
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('取消')),
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
             FilledButton(
               onPressed: () async {
                 if (nameCtl.text.trim().isEmpty) return;
@@ -1786,18 +1786,18 @@ class _EntityListTab extends ConsumerWidget {
                   ref.invalidate(graphDataProvider);
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('实体「${nameCtl.text.trim()}」创建成功')),
+                      SnackBar(content: Text('The entity "${nameCtl.text.trim()}" was created successfully')),
                     );
                   }
                 } catch (e) {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('创建失败: $e'), backgroundColor: Colors.red),
+                      SnackBar(content: Text('Creation failed: $e'), backgroundColor: Colors.red),
                     );
                   }
                 }
               },
-              child: const Text('创建'),
+              child: const Text('create'),
             ),
           ],
         ),
@@ -1826,11 +1826,11 @@ class _GenerationHistoryDialog extends ConsumerWidget {
         children: [
           const Icon(Icons.history, size: 22),
           const SizedBox(width: 8),
-          const Text('知识图谱生成历史'),
+          const Text('Knowledge graph generation history'),
           const Spacer(),
           IconButton(
             icon: const Icon(Icons.refresh, size: 20),
-            tooltip: '刷新',
+            tooltip: 'Refresh',
             onPressed: () => ref.invalidate(generationHistoryProvider),
           ),
         ],
@@ -1840,11 +1840,11 @@ class _GenerationHistoryDialog extends ConsumerWidget {
         height: 460,
         child: historyAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(child: Text('加载失败: $e')),
+          error: (e, _) => Center(child: Text('Loading failed: $e')),
           data: (entries) {
             if (entries.isEmpty) {
               return const Center(
-                child: Text('暂无生成记录', style: TextStyle(color: Colors.grey)),
+                child: Text('No generation record yet', style: TextStyle(color: Colors.grey)),
               );
             }
             return ListView.separated(
@@ -1861,7 +1861,7 @@ class _GenerationHistoryDialog extends ConsumerWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('关闭'),
+          child: const Text('close'),
         ),
       ],
     );
@@ -1886,9 +1886,9 @@ class _GenerationHistoryTile extends StatelessWidget {
     };
 
     final triggerLabel = switch (entry.triggerType) {
-      'manual_single' => '单文档',
-      'manual_batch' => '批量',
-      'auto' => '自动',
+      'manual_single' => 'single document',
+      'manual_batch' => 'batch',
+      'auto' => 'automatic',
       _ => entry.triggerType,
     };
 
@@ -1922,7 +1922,7 @@ class _GenerationHistoryTile extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              '${entry.entitiesCreated} 实体 / ${entry.relationsCreated} 关系',
+              '${entry.entitiesCreated} entity / ${entry.relationsCreated} relationship',
               style: theme.textTheme.bodyMedium,
               overflow: TextOverflow.ellipsis,
             ),
@@ -1948,22 +1948,22 @@ class _GenerationHistoryTile extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _detailRow('状态', entry.status),
-              _detailRow('触发方式', triggerLabel),
+              _detailRow('Status', entry.status),
+              _detailRow('Trigger mode', triggerLabel),
               if (entry.documentId != null)
-                _detailRow('文档 ID', entry.documentId!),
+                _detailRow('Document ID', entry.documentId!),
               if (entry.llmProvider != null || entry.llmModel != null)
-                _detailRow('模型',
+                _detailRow('model',
                     '${entry.llmProvider ?? ""}/${entry.llmModel ?? ""}'),
-              _detailRow('文档数',
+              _detailRow('Number of documents',
                   '${entry.processedDocuments}/${entry.totalDocuments}'),
-              _detailRow('实体/关系',
+              _detailRow('Entity/Relationship',
                   '${entry.entitiesCreated} / ${entry.relationsCreated}'),
               if (elapsed.isNotEmpty)
-                _detailRow('耗时', elapsed),
+                _detailRow('Time consuming', elapsed),
               if (entry.errors.isNotEmpty) ...[
                 const SizedBox(height: 4),
-                Text('错误:', style: TextStyle(
+                Text('Error:', style: TextStyle(
                     fontSize: 12, color: Colors.red.shade700,
                     fontWeight: FontWeight.w600)),
                 for (final err in entry.errors)

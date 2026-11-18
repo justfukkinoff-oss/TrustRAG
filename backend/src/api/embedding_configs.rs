@@ -146,7 +146,7 @@ async fn create_config(
     if is_likely_rerank_model(&model_name) {
         return Err(AppError::BadRequest(
             format!(
-                "模型 '{}' 看起来是重排(Rerank)模型，不能用于嵌入模型配置。请在「Rerank 模型」Tab 中配置此模型。",
+                "Model '{}' appears to be a Rerank model and cannot be used for embedded model configuration. Please configure this model in the \"Rerank Model\" Tab.",
                 model_name
             )
         ));
@@ -384,7 +384,7 @@ async fn test_connection(
                 && is_likely_rerank_model(&model_name)
             {
                 format!(
-                    "模型 '{}' 属于重排(Rerank)模型，不能用于嵌入模型配置。请在「Rerank 模型」Tab 中配置此模型。(原始错误: {})",
+                    "Model '{}' is a rerank model and cannot be used for embedded model configuration. Please configure this model in the \"Rerank Model\" Tab. (Original error: {})",
                     model_name, err_str
                 )
             } else {

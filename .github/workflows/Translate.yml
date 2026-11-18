@@ -1,52 +1,75 @@
-import os
-import xml.etree.ElementTree as ET
-from deep_translator import GoogleTranslator
+name: English UI and Android Debug APK
 
-def translate_text(text):
-    if not text or not text.strip():
-        return text
-    try:
-        # Translate from Chinese (auto-detects simplified/traditional) to English
-        translated = GoogleTranslator(source='zh', target='en').translate(text)
-        return translated if translated else text
-    except Exception as e:
-        print(f"Translation error for text '{text}': {e}")
-        return text
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'localization/**'
 
-def process_strings_file(file_path):
-    print(f"Processing: {file_path}")
-    tree = ET.parse(file_path)
-    root = tree.getroot()
+permissions:
+  contents: read
 
-    for elem in root.findall('.//string'):
-        if elem.text:
-            original = elem.text
-            translated = translate_text(original)
-            elem.text = translated
-            print(f"Translated: '{original}' -> '{translated}'")
+concurrency:
+  group: english-android-debug-${{ github.ref }}
+  cancel-in-progress: true
 
-    # Handle string arrays if present
-    for array in root.findall('.//string-array'):
-        for item in array.findall('item'):
-            if item.text:
-                original = item.text
-                translated = translate_text(original)
-                item.text = translated
+jobs:
+  build-debug-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
 
-    tree.write(file_path, encoding='utf-8', xml_declaration=True)
+      - name: Check hardcoded English UI copy
+        run: python3 scripts/check_english_ui.py
 
-def main():
-    # Walk through the repo to find Android strings.xml files
-    for root, dirs, files in os.walk('.'):
-        if '.git' in root:
-            continue
-        for file in files:
-            if file == 'strings.xml':
-                file_path = os.path.join(root, file)
-                # Skip English or backup folders if needed
-                if 'values-en' in file_path:
-                    continue
-                process_strings_file(file_path)
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
 
-if __name__ == '__main__':
-    main()
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android
+
+      - name: Install cargo-ndk
+        run: cargo install cargo-ndk --locked
+
+      - name: Set up Android NDK
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r27c
+
+      - name: Build bundled ARM64 backend
+        working-directory: backend
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+        run: cargo ndk -t arm64-v8a build --locked --release --no-default-features --features mobile
+
+      - name: Stage bundled backend
+        run: |
+          install -Dm755 backend/target/aarch64-linux-android/release/trustrag-backend \
+            apps/client/android/app/src/main/jniLibs/arm64-v8a/libtrustrap_backend.so
+
+      - name: Test English localization
+        working-directory: apps/client
+        run: flutter test test/i18n_test.dart test/english_onboarding_test.dart
+
+      - name: Build debug APK
+        working-directory: apps/client
+        run: flutter build apk --debug --target-platform android-arm64
+
+      - name: Verify bundled ARM64 backend in APK
+        working-directory: apps/client
+        run: unzip -l build/app/outputs/flutter-apk/app-debug.apk lib/arm64-v8a/libtrustrap_backend.so
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TrustRAG-English-debug-arm64
+          path: apps/client/build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error

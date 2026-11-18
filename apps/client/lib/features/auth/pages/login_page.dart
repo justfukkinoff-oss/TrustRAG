@@ -63,7 +63,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           await bm.ready;
           if (bm.hasFailed) {
             if (mounted) {
-              setState(() => _localAutoLoginError = bm.startupError ?? '本地后端启动失败');
+              setState(() => _localAutoLoginError = bm.startupError ?? 'Local backend startup failed');
             }
             return;
           }
@@ -115,7 +115,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             children: [
               const CircularProgressIndicator(),
               const SizedBox(height: 16),
-              Text('正在启动本地服务...', style: theme.textTheme.bodyMedium),
+              Text('Starting local service...', style: theme.textTheme.bodyMedium),
             ],
           ),
         ),
@@ -126,11 +126,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     IconData modeIcon;
     Color modeBadgeColor;
     if (isLocalMode) {
-      modeLabel = '本地模式';
+      modeLabel = 'local mode';
       modeIcon = Icons.computer_rounded;
       modeBadgeColor = Colors.green;
     } else {
-      modeLabel = '服务器模式';
+      modeLabel = 'Server mode';
       modeIcon = Icons.cloud_rounded;
       modeBadgeColor = theme.colorScheme.primary;
     }
@@ -161,8 +161,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 const SizedBox(height: 8),
                 Text(
                   isLocalMode
-                      ? '可信赖的 RAG 知识工作台'
-                      : '连接到: ${modeState.serverUrl ?? "服务器"}',
+                      ? 'Trustworthy RAG knowledge workbench'
+                  : 'Server: ${modeState.serverUrl ?? "Not configured"}',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: Colors.grey,
                   ),
@@ -205,7 +205,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     child: Column(
                       children: [
                         Text(
-                          '本地服务启动失败',
+                          'Local service failed to start',
                           style: TextStyle(
                             color: theme.colorScheme.error,
                             fontWeight: FontWeight.bold,
@@ -225,7 +225,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                               _localAutoLoginError = null;
                             });
                           },
-                          child: const Text('重试'),
+                          child: const Text('Try again'),
                         ),
                       ],
                     ),
@@ -239,13 +239,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       TextFormField(
                         controller: _emailController,
                         decoration: const InputDecoration(
-                          labelText: '邮箱',
+                          labelText: 'Email',
                           prefixIcon: Icon(Icons.email_outlined),
                         ),
                         keyboardType: TextInputType.emailAddress,
                         validator: (v) {
-                          if (v == null || v.isEmpty) return '请输入邮箱';
-                          if (!v.contains('@')) return '请输入有效邮箱';
+                          if (v == null || v.isEmpty) return 'Please enter your email';
+                          if (!v.contains('@')) return 'Please enter a valid email address';
                           return null;
                         },
                       ),
@@ -253,7 +253,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       TextFormField(
                         controller: _passwordController,
                         decoration: InputDecoration(
-                          labelText: '密码',
+                          labelText: 'Password',
                           prefixIcon: const Icon(Icons.lock_outlined),
                           suffixIcon: IconButton(
                             icon: Icon(
@@ -267,8 +267,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         ),
                         obscureText: _obscurePassword,
                         validator: (v) {
-                          if (v == null || v.isEmpty) return '请输入密码';
-                          if (v.length < 8) return '密码至少 8 个字符';
+                          if (v == null || v.isEmpty) return 'Please enter password';
+                          if (v.length < 8) return 'Password must be at least 8 characters';
                           return null;
                         },
                         onFieldSubmitted: (_) => _handleLogin(),
@@ -293,7 +293,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       onTap: () =>
                           setState(() => _rememberLogin = !_rememberLogin),
                       child: Text(
-                        '保持登录状态',
+                        'Stay logged in',
                         style: theme.textTheme.bodyMedium
                             ?.copyWith(color: Colors.grey.shade700),
                       ),
@@ -327,16 +327,16 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             color: Colors.white,
                           ),
                         )
-                      : const Text('登录'),
+                      : const Text('Login'),
                 ),
                 const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('还没有账号？'),
+                    const Text('Don’t have an account yet?'),
                     TextButton(
                       onPressed: () => context.go('/register'),
-                      child: const Text('注册'),
+                      child: const Text('Register'),
                     ),
                   ],
                 ),
@@ -347,7 +347,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     if (context.mounted) context.go('/onboarding');
                   },
                   child: Text(
-                    '切换使用方式',
+                    'Switch usage',
                     style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
                   ),
                 ),

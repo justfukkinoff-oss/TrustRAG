@@ -68,23 +68,23 @@ class Document {
   }
 
   String get progressDescription {
-    if (processingStatus == 'pending') return '等待处理';
-    if (processingStatus == 'processing') return '正在解析文档...';
+    if (processingStatus == 'pending') return 'Waiting for processing';
+    if (processingStatus == 'processing') return 'Processing document...';
     if (processingStatus == 'chunking') {
       if (chunksTotal != null && chunksTotal! > 0) {
-        return '分块中 ${chunksDone ?? 0}/$chunksTotal';
+        return 'Chunking ${chunksDone ?? 0}/$chunksTotal';
       }
-      return '正在分块...';
+      return 'Chunking...';
     }
     if (processingStatus == 'embedding') {
       if (embeddingBatchesTotal != null && embeddingBatchesTotal! > 0) {
-        return '向量化 ${embeddingBatchesDone ?? 0}/$embeddingBatchesTotal';
+        return 'Vectorization ${embeddingBatchesDone ?? 0}/$embeddingBatchesTotal';
       }
-      return '正在生成向量...';
+      return 'Generating vectors...';
     }
-    if (processingStatus == 'ready') return '已就绪';
-    if (processingStatus == 'failed') return '处理失败';
-    if (processingStatus == 'embedding_failed') return '向量化失败';
+    if (processingStatus == 'ready') return 'Ready';
+    if (processingStatus == 'failed') return 'Processing failed';
+    if (processingStatus == 'embedding_failed') return 'Embedding failed';
     return processingStatus;
   }
 
@@ -156,7 +156,7 @@ class DocumentNotifier extends StateNotifier<AsyncValue<List<Document>>> {
   DocumentNotifier(this.ref) : super(const AsyncValue.data([]));
 
   Future<void> loadDocuments(String workspaceId) async {
-    DebugLogBuffer().add('DOC 加载文档列表: workspace=$workspaceId');
+    DebugLogBuffer().add('DOC loading document list: workspace=$workspaceId');
     state = const AsyncValue.loading();
     try {
       final api = ref.read(apiClientProvider);
@@ -168,17 +168,17 @@ class DocumentNotifier extends StateNotifier<AsyncValue<List<Document>>> {
       for (final d in list) {
         statusSummary[d.processingStatus] = (statusSummary[d.processingStatus] ?? 0) + 1;
       }
-      DebugLogBuffer().add('DOC 加载完成: ${list.length}个文档, 状态分布: $statusSummary');
+      DebugLogBuffer().add('DOC loading completed: ${list.length} documents, status distribution: $statusSummary');
       state = AsyncValue.data(list);
     } catch (e, st) {
-      DebugLogBuffer().add('ERROR DOC 加载失败: $e');
+      DebugLogBuffer().add('ERROR DOC failed to load: $e');
       state = AsyncValue.error(e, st);
     }
   }
 
   Future<bool> uploadDocument(String workspaceId, List<int> bytes, String filename) async {
     final sizeKb = (bytes.length / 1024).toStringAsFixed(1);
-    DebugLogBuffer().add('DOC 上传开始: $filename (${sizeKb}KB)');
+    DebugLogBuffer().add('DOC upload starts: $filename (${sizeKb}KB)');
     try {
       final api = ref.read(apiClientProvider);
       final formData = FormData.fromMap({
@@ -188,11 +188,11 @@ class DocumentNotifier extends StateNotifier<AsyncValue<List<Document>>> {
         '/workspaces/$workspaceId/documents',
         data: formData,
       );
-      DebugLogBuffer().add('DOC 上传成功: $filename');
+      DebugLogBuffer().add('DOC uploaded successfully: $filename');
       await loadDocuments(workspaceId);
       return true;
     } catch (e) {
-      DebugLogBuffer().add('ERROR DOC 上传失败: $filename — $e');
+      DebugLogBuffer().add('ERROR DOC upload failed: $filename — $e');
       return false;
     }
   }
@@ -222,7 +222,7 @@ class DocumentNotifier extends StateNotifier<AsyncValue<List<Document>>> {
       );
       return true;
     } catch (e) {
-      DebugLogBuffer().add('ERROR DOC 重新处理失败: $docId — $e');
+      DebugLogBuffer().add('ERROR DOC reprocessing failed: $docId — $e');
       return false;
     }
   }
@@ -240,7 +240,7 @@ class DocumentNotifier extends StateNotifier<AsyncValue<List<Document>>> {
       );
       return true;
     } catch (e) {
-      DebugLogBuffer().add('ERROR DOC 更新标签失败: $docId — $e');
+      DebugLogBuffer().add('ERROR DOC Failed to update label: $docId — $e');
       return false;
     }
   }

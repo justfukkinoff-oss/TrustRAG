@@ -109,7 +109,7 @@ class _PdfViewerPageState extends ConsumerState<PdfViewerPage> {
             Text(widget.title, style: const TextStyle(fontSize: 16)),
             if (_totalPages > 0)
               Text(
-                '第 $_currentPage / $_totalPages 页',
+                'Page $_currentPage / $_totalPages',
                 style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
               ),
           ],
@@ -117,7 +117,7 @@ class _PdfViewerPageState extends ConsumerState<PdfViewerPage> {
         actions: [
           IconButton(
             icon: Icon(_isSearching ? Icons.close : Icons.search),
-            tooltip: _isSearching ? '关闭搜索' : '搜索',
+            tooltip: _isSearching ? 'Close search' : 'Search',
             onPressed: () {
               if (_isSearching) {
                 _searchResult?.clear();
@@ -130,14 +130,14 @@ class _PdfViewerPageState extends ConsumerState<PdfViewerPage> {
           ),
           IconButton(
             icon: const Icon(Icons.zoom_in),
-            tooltip: '放大',
+            tooltip: 'Zoom in',
             onPressed: () {
               _pdfController.zoomLevel = (_pdfController.zoomLevel + 0.25).clamp(0.5, 3.0);
             },
           ),
           IconButton(
             icon: const Icon(Icons.zoom_out),
-            tooltip: '缩小',
+            tooltip: 'zoom out',
             onPressed: () {
               _pdfController.zoomLevel = (_pdfController.zoomLevel - 0.25).clamp(0.5, 3.0);
             },
@@ -160,7 +160,7 @@ class _PdfViewerPageState extends ConsumerState<PdfViewerPage> {
                       controller: _searchController,
                       autofocus: true,
                       decoration: InputDecoration(
-                        hintText: '在文档中搜索...',
+                        hintText: 'Search in documents...',
                         isDense: true,
                         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
@@ -183,14 +183,14 @@ class _PdfViewerPageState extends ConsumerState<PdfViewerPage> {
                   const SizedBox(width: 8),
                   IconButton(
                     icon: const Icon(Icons.keyboard_arrow_up, size: 20),
-                    tooltip: '上一个',
+                    tooltip: 'Previous',
                     onPressed: _searchResult?.hasResult == true
                         ? () => _searchResult!.previousInstance()
                         : null,
                   ),
                   IconButton(
                     icon: const Icon(Icons.keyboard_arrow_down, size: 20),
-                    tooltip: '下一个',
+                    tooltip: 'next',
                     onPressed: _searchResult?.hasResult == true
                         ? () => _searchResult!.nextInstance()
                         : null,
@@ -209,7 +209,7 @@ class _PdfViewerPageState extends ConsumerState<PdfViewerPage> {
               onPageChanged: _onPageChanged,
               onDocumentLoadFailed: (PdfDocumentLoadFailedDetails details) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('PDF 加载失败: ${details.description}')),
+                  SnackBar(content: Text('PDF loading failed: ${details.description}')),
                 );
               },
               canShowScrollHead: true,

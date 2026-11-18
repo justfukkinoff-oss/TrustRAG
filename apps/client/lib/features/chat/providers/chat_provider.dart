@@ -142,7 +142,7 @@ class ConversationNotifier
       final api = ref.read(apiClientProvider);
       final resp = await api.dio.post(
         '/workspaces/$workspaceId/conversations',
-        data: {'title': title ?? '新对话'},
+        data: {'title': title ?? 'New chat'},
       );
       final conv = Conversation.fromJson(resp.data);
       state = AsyncValue.data([conv, ...state.value ?? []]);

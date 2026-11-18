@@ -294,13 +294,13 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
             OutlinedButton.icon(
               onPressed: () => _showJoinTeamDialog(),
               icon: const Icon(Icons.login, size: 18),
-              label: const Text('加入团队'),
+              label: const Text('Join the team'),
             ),
             const SizedBox(width: 8),
             FilledButton.icon(
               onPressed: () => _showCreateTeamDialog(),
               icon: const Icon(Icons.group_add, size: 18),
-              label: const Text('创建团队'),
+              label: const Text('Create a team'),
             ),
             const SizedBox(width: 8),
             FilledButton.tonalIcon(
@@ -358,7 +358,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                   if (personal.isNotEmpty) ...[
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8),
-                      child: Text('个人空间', style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.grey)),
+                      child: Text('personal space', style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.grey)),
                     ),
                     ...personal.map((ws) => _buildWorkspaceCard(ws, selectedWs)),
                     const SizedBox(height: 16),
@@ -366,7 +366,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                   if (teams.isNotEmpty) ...[
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8),
-                      child: Text('团队空间', style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.grey)),
+                      child: Text('Team space', style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.grey)),
                     ),
                     ...teams.map((ws) => _buildWorkspaceCard(ws, selectedWs)),
                   ],
@@ -406,7 +406,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                   color: Colors.blue.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: const Text('团队', style: TextStyle(fontSize: 10, color: Colors.blue)),
+                child: const Text('team', style: TextStyle(fontSize: 10, color: Colors.blue)),
               ),
           ],
         ),
@@ -417,7 +417,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
             if (ws.isTeam)
               IconButton(
                 icon: const Icon(Icons.settings, size: 18),
-                tooltip: '团队设置',
+                tooltip: 'Team settings',
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
@@ -472,8 +472,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
               Card(
                 child: ListTile(
                   leading: const Icon(Icons.storage),
-                  title: const Text('本地数据管理'),
-                  subtitle: const Text('数据库信息、备份、重置、状态诊断'),
+                  title: const Text('Local data management'),
+                  subtitle: const Text('Database information, backup, reset, status diagnosis'),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
                     Navigator.of(context).push(
@@ -487,8 +487,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
               Card(
                 child: ListTile(
                   leading: const Icon(Icons.document_scanner),
-                  title: const Text('OCR 组件管理'),
-                  subtitle: const Text('扫描版 PDF 识别，Tesseract / PaddleOCR'),
+                  title: const Text('OCR component management'),
+                  subtitle: const Text('Scanned PDF recognition, Tesseract / PaddleOCR'),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
                     Navigator.of(context).push(
@@ -502,10 +502,10 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
               if (selectedWs != null) Card(
                 child: SwitchListTile(
                   secondary: const Icon(Icons.sort),
-                  title: const Text('Rerank 重排序'),
+                  title: const Text('Rerank reorder'),
                   subtitle: Text(selectedWs.rerankEnabled
-                      ? '当前工作区已启用 Rerank 重排序'
-                      : '当前工作区已关闭 Rerank，仅使用嵌入检索'),
+                      ? 'Rerank is enabled for the current workspace'
+                      : 'Rerank is turned off for the current workspace, only embedded retrieval is used'),
                   value: selectedWs.rerankEnabled,
                   onChanged: (v) async {
                     final api = ref.read(apiClientProvider);
@@ -524,8 +524,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                 Card(
                   child: ListTile(
                     leading: Icon(Icons.groups, color: Theme.of(context).colorScheme.primary),
-                    title: const Text('团队设置'),
-                    subtitle: Text('管理「${selectedWs!.name}」团队'),
+                    title: const Text('Team settings'),
+                    subtitle: Text('Manage the "${selectedWs!.name}" team'),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
                       Navigator.of(context).push(
@@ -738,31 +738,31 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
 
     switch (modeState.mode) {
       case AppMode.local:
-        modeLabel = '本地模式';
+        modeLabel = 'local mode';
         modeIcon = Icons.computer;
       case AppMode.server:
-        modeLabel = '服务器模式';
+        modeLabel = 'Server mode';
         modeIcon = Icons.cloud;
       case AppMode.unset:
-        modeLabel = '未设置';
+        modeLabel = 'not set';
         modeIcon = Icons.help_outline;
     }
 
     return Card(
       child: ListTile(
         leading: Icon(modeIcon),
-        title: const Text('使用模式'),
+        title: const Text('usage pattern'),
         subtitle: Text(modeLabel),
         trailing: TextButton(
           onPressed: () async {
             final confirmed = await showDialog<bool>(
               context: context,
               builder: (ctx) => AlertDialog(
-                title: const Text('切换使用模式'),
-                content: const Text('将返回引导页面重新选择使用模式。\n当前登录状态将被清除。'),
+                title: const Text('Switch usage mode'),
+                content: const Text('You will return to setup to choose a mode again.\nThis will sign you out.'),
                 actions: [
-                  TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('取消')),
-                  FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('确认')),
+                  TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                  FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Confirm')),
                 ],
               ),
             );
@@ -772,7 +772,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
               if (mounted) context.go('/onboarding');
             }
           },
-          child: const Text('切换'),
+          child: const Text('switch'),
         ),
       ),
     );
@@ -1042,7 +1042,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
 
     if (!extended) {
       return Tooltip(
-        message: email.isNotEmpty ? email : '账号',
+        message: email.isNotEmpty ? email : 'Account number',
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
           onTap: () => _showAccountMenu(context, ref),
@@ -1083,7 +1083,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                email.isNotEmpty ? email : '未登录',
+                email.isNotEmpty ? email : 'Not logged in',
                 style: const TextStyle(fontSize: 12),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -1123,7 +1123,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
             case ApiClient.switchNeedLogin:
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('请重新登录 $email'),
+                  content: Text('Please log in again $email'),
                   duration: const Duration(seconds: 3),
                 ),
               );
@@ -1131,7 +1131,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
             case ApiClient.switchFailed:
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('切换账号失败，已回滚到原账号'),
+                  content: Text('Failed to switch accounts and has been rolled back to the original account.'),
                   duration: Duration(seconds: 3),
                 ),
               );
@@ -1148,23 +1148,23 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('退出登录'),
+        title: const Text('Log out'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (userEmail.isNotEmpty) ...[
-              Text('当前账号: $userEmail',
+              Text('Current account: $userEmail',
                   style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
               const SizedBox(height: 16),
             ],
-            const Text('请选择退出方式：'),
+            const Text('Please choose how to exit:'),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('取消'),
+            child: const Text('Cancel'),
           ),
           OutlinedButton.icon(
             onPressed: () {
@@ -1173,7 +1173,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
               context.go('/login');
             },
             icon: const Icon(Icons.delete_outline, size: 18),
-            label: const Text('退出并清除数据'),
+            label: const Text('Exit and clear data'),
           ),
           FilledButton.icon(
             onPressed: () {
@@ -1182,7 +1182,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
               context.go('/login');
             },
             icon: const Icon(Icons.logout, size: 18),
-            label: const Text('退出登录'),
+            label: const Text('Log out'),
           ),
         ],
       ),
@@ -1227,7 +1227,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
               final teams = list.where((w) => w.isTeam).toList();
 
               if (personal.isNotEmpty) {
-                items.add(const PopupMenuItem(enabled: false, child: Text('── 个人空间 ──', style: TextStyle(fontSize: 11, color: Colors.grey))));
+                items.add(const PopupMenuItem(enabled: false, child: Text('── Personal space ──', style: TextStyle(fontSize: 11, color: Colors.grey))));
                 for (final ws in personal) {
                   items.add(PopupMenuItem(
                     value: ws.id,
@@ -1242,7 +1242,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
               }
               if (teams.isNotEmpty) {
                 items.add(const PopupMenuDivider());
-                items.add(const PopupMenuItem(enabled: false, child: Text('── 团队空间 ──', style: TextStyle(fontSize: 11, color: Colors.grey))));
+                items.add(const PopupMenuItem(enabled: false, child: Text('──Team space──', style: TextStyle(fontSize: 11, color: Colors.grey))));
                 for (final ws in teams) {
                   items.add(PopupMenuItem(
                     value: ws.id,
@@ -1256,8 +1256,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                 }
               }
               items.add(const PopupMenuDivider());
-              items.add(const PopupMenuItem(value: '__create_team__', child: Row(children: [Icon(Icons.add, size: 16), SizedBox(width: 8), Text('创建团队')])));
-              items.add(const PopupMenuItem(value: '__join_team__', child: Row(children: [Icon(Icons.login, size: 16), SizedBox(width: 8), Text('加入团队')])));
+              items.add(const PopupMenuItem(value: '__create_team__', child: Row(children: [Icon(Icons.add, size: 16), SizedBox(width: 8), Text('Create a team')])));
+              items.add(const PopupMenuItem(value: '__join_team__', child: Row(children: [Icon(Icons.login, size: 16), SizedBox(width: 8), Text('Join the team')])));
               return items;
             },
           );
@@ -1436,19 +1436,19 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('创建团队'),
+        title: const Text('Create a team'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: nameController,
-              decoration: const InputDecoration(labelText: '团队名称', border: OutlineInputBorder()),
+              decoration: const InputDecoration(labelText: 'Team name', border: OutlineInputBorder()),
               autofocus: true,
             ),
             const SizedBox(height: 12),
             TextField(
               controller: descController,
-              decoration: const InputDecoration(labelText: '团队描述（可选）', border: OutlineInputBorder()),
+              decoration: const InputDecoration(labelText: 'Team description (optional)', border: OutlineInputBorder()),
             ),
           ],
         ),
@@ -1468,7 +1468,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                 Navigator.pop(ctx);
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('团队「${ws.name}」创建成功！邀请码: ${ws.inviteCode ?? "N/A"}')),
+                    SnackBar(content: Text('Team "${ws.name}" was created successfully! Invitation code: ${ws.inviteCode ?? "N/A"}')),
                   );
                 }
               }
@@ -1486,15 +1486,15 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('加入团队'),
+        title: const Text('Join the team'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: codeController,
               decoration: const InputDecoration(
-                labelText: '邀请码',
-                hintText: '输入 8 位邀请码',
+                labelText: 'Invitation code',
+                hintText: 'Enter the 8-digit invitation code',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.vpn_key),
               ),
@@ -1517,16 +1517,16 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                 Navigator.pop(ctx);
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('已加入团队「${ws.name}」！')),
+                    SnackBar(content: Text('Joined the team "${ws.name}"!')),
                   );
                 }
               } else if (ctx.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('加入失败，请检查邀请码是否正确')),
+                  const SnackBar(content: Text('Failed to join, please check whether the invitation code is correct')),
                 );
               }
             },
-            child: const Text('加入'),
+            child: const Text('Join'),
           ),
         ],
       ),
@@ -1677,14 +1677,14 @@ class _AccountMenuSheetState extends State<_AccountMenuSheet> {
   bool _isLocalAccount(String email) => email == _localEmail;
 
   String _displayName(String email) {
-    if (_isLocalAccount(email)) return '本地模式';
+    if (_isLocalAccount(email)) return 'local mode';
     return email;
   }
 
   String _statusLabel(String email) {
-    if (email == widget.currentEmail) return '当前活跃';
-    if (_accountsWithToken.contains(email)) return '可切换';
-    return '需重新登录';
+    if (email == widget.currentEmail) return 'Currently active';
+    if (_accountsWithToken.contains(email)) return 'switchable';
+    return 'Need to log in again';
   }
 
   Color _statusColor(String email) {
@@ -1703,14 +1703,14 @@ class _AccountMenuSheetState extends State<_AccountMenuSheet> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('移除账号'),
-        content: Text('确定要从列表中移除 $email 吗？\n这不会删除远程账号，只会清除本地保存的登录状态。'),
+        title: const Text('Remove account'),
+        content: Text('Are you sure you want to remove $email from the list? \nThis will not delete the remote account, it will only clear the locally saved login status.'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('取消')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: FilledButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('移除'),
+            child: const Text('Remove'),
           ),
         ],
       ),
@@ -1757,7 +1757,7 @@ class _AccountMenuSheetState extends State<_AccountMenuSheet> {
           const SizedBox(height: 12),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text('账号管理', style: theme.textTheme.titleMedium?.copyWith(
+            child: Text('Account management', style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w600,
             )),
           ),
@@ -1807,7 +1807,7 @@ class _AccountMenuSheetState extends State<_AccountMenuSheet> {
                           children: [
                             const Icon(Icons.check_circle, color: Colors.green, size: 14),
                             const SizedBox(width: 4),
-                            Text('当前活跃', style: TextStyle(
+                            Text('Currently active', style: TextStyle(
                               fontSize: 12, color: Colors.green.shade600,
                               fontWeight: FontWeight.w500,
                             )),
@@ -1826,7 +1826,7 @@ class _AccountMenuSheetState extends State<_AccountMenuSheet> {
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: Text('其他账号',
+                child: Text('Other accounts',
                     style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500,
                         color: cs.onSurfaceVariant)),
               ),
@@ -1865,7 +1865,7 @@ class _AccountMenuSheetState extends State<_AccountMenuSheet> {
                     children: [
                       IconButton(
                         icon: Icon(Icons.delete_outline, size: 18, color: Colors.red.shade300),
-                        tooltip: '移除账号',
+                        tooltip: 'Remove account',
                         onPressed: () => _confirmDeleteAccount(email),
                       ),
                       Icon(Icons.swap_horiz, size: 18, color: cs.onSurfaceVariant),
@@ -1883,7 +1883,7 @@ class _AccountMenuSheetState extends State<_AccountMenuSheet> {
             child: ListTile(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               leading: Icon(Icons.logout, color: Colors.red.shade400),
-              title: Text('退出登录', style: TextStyle(color: Colors.red.shade400)),
+              title: Text('Log out', style: TextStyle(color: Colors.red.shade400)),
               onTap: widget.onLogout,
             ),
           ),

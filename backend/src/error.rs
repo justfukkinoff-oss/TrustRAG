@@ -98,13 +98,13 @@ impl IntoResponse for AppError {
 
 fn classify_db_error(err: &str) -> String {
     if err.contains("FOREIGN KEY constraint failed") {
-        "当前登录用户与本地数据库不匹配，请重新登录或重置本地数据".into()
+        "The current logged in user does not match the local database. Please log in again or reset the local data.".into()
     } else if err.contains("no such table") || err.contains("no such column") {
-        "本地数据库版本过旧，与当前应用版本不兼容。请在设置中重置本地数据库或重新安装应用".into()
+        "The local database version is too old and incompatible with the current application version. Please reset the local database in settings or reinstall the app".into()
     } else if err.contains("UNIQUE constraint failed") {
-        "数据冲突：记录已存在".into()
+        "Data conflict: record already exists".into()
     } else if err.contains("database is locked") {
-        "数据库正忙，请稍后重试".into()
+        "The database is busy, please try again later".into()
     } else {
         "Database error".into()
     }

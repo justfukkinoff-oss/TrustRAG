@@ -57,7 +57,7 @@ class UpdateDialog extends StatelessWidget {
           size: 32,
         ),
       ),
-      title: const Text('发现新版本'),
+      title: const Text('new version found'),
       content: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 480, maxHeight: 420),
         child: Column(
@@ -80,7 +80,7 @@ class UpdateDialog extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             if (release.releaseNotes.isNotEmpty) ...[
-              Text('更新内容', style: theme.textTheme.titleSmall?.copyWith(
+              Text('Update content', style: theme.textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w600,
               )),
               const SizedBox(height: 8),
@@ -111,16 +111,16 @@ class UpdateDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: onSkip,
-          child: const Text('跳过此版本'),
+          child: const Text('Skip this version'),
         ),
         TextButton(
           onPressed: onLater,
-          child: const Text('稍后提醒'),
+          child: const Text('reminder later'),
         ),
         FilledButton.icon(
           onPressed: () => _openDownload(context, platformUrl),
           icon: const Icon(Icons.download_rounded, size: 18),
-          label: const Text('前往下载'),
+          label: const Text('Go to download'),
         ),
       ],
       actionsAlignment: MainAxisAlignment.end,
@@ -158,7 +158,7 @@ class UpdateDialog extends StatelessWidget {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('无法打开链接: $e')),
+          SnackBar(content: Text('Unable to open link: $e')),
         );
       }
     }

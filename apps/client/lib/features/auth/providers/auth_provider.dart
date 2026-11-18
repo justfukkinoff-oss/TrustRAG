@@ -106,7 +106,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
           if (backend.hasFailed) {
             state = state.copyWith(
               status: AuthStatus.unauthenticated,
-              error: '本地后端启动失败: ${backend.startupError ?? "未知错误"}',
+            error: 'Local backend startup failed: ${backend.startupError ?? "Unknown error"}',
             );
             return false;
           }
@@ -140,17 +140,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
           e.type == DioExceptionType.connectionTimeout) {
         if (BackendManager.shouldRunEmbedded) {
           if (!backend.isRunning) {
-            msg = '本地后端未启动，请先点击"进入本地模式"启动后端服务';
+            msg = 'The local backend is not started. Please click "Enter local mode" to start the backend service first.';
           } else if (backend.hasFailed) {
-            msg = '本地后端启动失败: ${backend.startupError ?? "请查看应用日志"}';
+        msg = 'Local backend startup failed: ${backend.startupError ?? "Check the app logs"}';
           } else {
-            msg = '本地后端健康检查失败 (${backend.baseUrl})，请稍后重试';
+            msg = 'Local backend health check failed (${backend.baseUrl}), please try again later';
           }
         } else {
-          msg = '无法连接服务器，请检查网络连接';
+          msg = 'Unable to connect to server, please check network connection';
         }
       } else {
-        msg = (e.response?.data?['error'] ?? '登录失败').toString();
+        msg = (e.response?.data?['error'] ?? 'Login failed').toString();
       }
       state = state.copyWith(
         status: AuthStatus.unauthenticated,
@@ -179,7 +179,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
           await backend.ready;
           if (backend.hasFailed) {
             state = state.copyWith(
-              error: '本地后端启动失败: ${backend.startupError ?? "未知错误"}',
+            error: 'Local backend startup failed: ${backend.startupError ?? "Unknown error"}',
             );
             return false;
           }
@@ -209,17 +209,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
           e.type == DioExceptionType.connectionTimeout) {
         if (BackendManager.shouldRunEmbedded) {
           if (!backend.isRunning) {
-            msg = '本地后端未启动，请先点击"进入本地模式"启动后端服务';
+            msg = 'The local backend is not started. Please click "Enter local mode" to start the backend service first.';
           } else if (backend.hasFailed) {
-            msg = '本地后端启动失败: ${backend.startupError ?? "请查看应用日志"}';
+        msg = 'Local backend startup failed: ${backend.startupError ?? "Check the app logs"}';
           } else {
-            msg = '本地后端健康检查失败 (${backend.baseUrl})，请稍后重试';
+            msg = 'Local backend health check failed (${backend.baseUrl}), please try again later';
           }
         } else {
-          msg = '无法连接服务器，请检查网络连接';
+          msg = 'Unable to connect to server, please check network connection';
         }
       } else {
-        msg = (e.response?.data?['error'] ?? '注册失败').toString();
+        msg = (e.response?.data?['error'] ?? 'Registration failed').toString();
       }
       state = state.copyWith(error: msg);
       return false;

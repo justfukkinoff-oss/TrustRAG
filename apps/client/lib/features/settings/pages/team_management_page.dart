@@ -29,13 +29,13 @@ class _TeamManagementPageState extends ConsumerState<TeamManagementPage> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('重新生成邀请码'),
-        content: const Text('重新生成后，旧邀请码将失效。确认继续？'),
+        title: const Text('Regenerate invitation code'),
+        content: const Text('After regeneration, the old invitation code will become invalid. Confirm to continue?'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(S.of(context).cancel)),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('确认'),
+            child: const Text('Confirm'),
           ),
         ],
       ),
@@ -56,7 +56,7 @@ class _TeamManagementPageState extends ConsumerState<TeamManagementPage> {
         );
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('新邀请码: $newCode')),
+        SnackBar(content: Text('New invitation code: $newCode')),
       );
     }
   }
@@ -66,7 +66,7 @@ class _TeamManagementPageState extends ConsumerState<TeamManagementPage> {
     if (code == null) return;
     Clipboard.setData(ClipboardData(text: code));
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('邀请码已复制'), duration: Duration(seconds: 2)),
+      const SnackBar(content: Text('Invitation code has been copied'), duration: Duration(seconds: 2)),
     );
   }
 
@@ -74,8 +74,8 @@ class _TeamManagementPageState extends ConsumerState<TeamManagementPage> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('转让管理员'),
-        content: const Text('此功能将在成员列表中选择新的管理员。转让后你将变为管理员角色。'),
+        title: const Text('transfer administrator'),
+        content: const Text('This function will select the new administrator in the members list. After the transfer you will become an administrator.'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: Text(S.of(context).cancel)),
           FilledButton(
@@ -85,7 +85,7 @@ class _TeamManagementPageState extends ConsumerState<TeamManagementPage> {
                 MaterialPageRoute(builder: (_) => const WorkspaceMembersPage()),
               );
             },
-            child: const Text('前往成员管理'),
+            child: const Text('Go to member management'),
           ),
         ],
       ),
@@ -98,14 +98,14 @@ class _TeamManagementPageState extends ConsumerState<TeamManagementPage> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('解散团队', style: TextStyle(color: Colors.red)),
+        title: const Text('Disband the team', style: TextStyle(color: Colors.red)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('此操作不可撤销！团队中的所有文档、对话和审核记录将被永久删除。'),
+            Text('This action is irreversible! All documents, conversations, and review records in the team will be permanently deleted.'),
             const SizedBox(height: 16),
-            Text('请输入团队名称「${_workspace.name}」确认：', style: const TextStyle(fontWeight: FontWeight.w600)),
+            Text('Please enter the team name "${_workspace.name}" to confirm:', style: const TextStyle(fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
             TextField(
               controller: confirmController,
@@ -123,7 +123,7 @@ class _TeamManagementPageState extends ConsumerState<TeamManagementPage> {
             onPressed: () async {
               if (confirmController.text.trim() != _workspace.name) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('团队名称不匹配')),
+                  const SnackBar(content: Text('Team names don\'t match')),
                 );
                 return;
               }
@@ -135,18 +135,18 @@ class _TeamManagementPageState extends ConsumerState<TeamManagementPage> {
                 if (mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('团队已解散')),
+                    const SnackBar(content: Text('The team has been disbanded')),
                   );
                 }
               } catch (e) {
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('解散失败: $e')),
+                    SnackBar(content: Text('Dismissal failed: $e')),
                   );
                 }
               }
             },
-            child: const Text('确认解散'),
+            child: const Text('Confirm dissolution'),
           ),
         ],
       ),
@@ -159,7 +159,7 @@ class _TeamManagementPageState extends ConsumerState<TeamManagementPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${_workspace.name} — 团队设置'),
+        title: Text('${_workspace.name} — Team settings'),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -200,9 +200,9 @@ class _TeamManagementPageState extends ConsumerState<TeamManagementPage> {
               children: [
                 ListTile(
                   leading: const Icon(Icons.vpn_key),
-                  title: const Text('邀请码'),
+                  title: const Text('Invitation code'),
                   subtitle: Text(
-                    _workspace.inviteCode ?? '无',
+                    _workspace.inviteCode ?? 'None',
                     style: TextStyle(
                       fontFamily: 'monospace',
                       fontSize: 18,
@@ -216,12 +216,12 @@ class _TeamManagementPageState extends ConsumerState<TeamManagementPage> {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.copy),
-                        tooltip: '复制邀请码',
+                        tooltip: 'Copy invitation code',
                         onPressed: _workspace.inviteCode != null ? _copyInviteCode : null,
                       ),
                       IconButton(
                         icon: const Icon(Icons.refresh),
-                        tooltip: '重新生成',
+                        tooltip: 'Regenerate',
                         onPressed: _regenerateInviteCode,
                       ),
                     ],
@@ -230,16 +230,16 @@ class _TeamManagementPageState extends ConsumerState<TeamManagementPage> {
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.share),
-                  title: const Text('分享邀请'),
-                  subtitle: const Text('将邀请码发送给团队成员'),
+                  title: const Text('share invitation'),
+                  subtitle: const Text('Send invitation code to team members'),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
                     final code = _workspace.inviteCode ?? '';
                     Clipboard.setData(ClipboardData(
-                      text: '邀请你加入 TrustRAG 团队「${_workspace.name}」\n邀请码: $code',
+                      text: 'Invite you to join the TrustRAG team "${_workspace.name}" \n invitation code: $code',
                     ));
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('邀请信息已复制到剪贴板')),
+                      const SnackBar(content: Text('Invitation information has been copied to the clipboard')),
                     );
                   },
                 ),
@@ -252,8 +252,8 @@ class _TeamManagementPageState extends ConsumerState<TeamManagementPage> {
               children: [
                 ListTile(
                   leading: const Icon(Icons.group),
-                  title: const Text('成员管理'),
-                  subtitle: const Text('查看和管理团队成员'),
+                  title: const Text('Member management'),
+                  subtitle: const Text('View and manage team members'),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
                     Navigator.of(context).push(
@@ -271,16 +271,16 @@ class _TeamManagementPageState extends ConsumerState<TeamManagementPage> {
               children: [
                 ListTile(
                   leading: Icon(Icons.swap_horiz, color: Colors.orange.shade700),
-                  title: Text('转让管理员', style: TextStyle(color: Colors.orange.shade700)),
-                  subtitle: const Text('将团队所有权转让给其他成员'),
+                  title: Text('transfer administrator', style: TextStyle(color: Colors.orange.shade700)),
+                  subtitle: const Text('Transfer team ownership to other members'),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: _showTransferOwnershipDialog,
                 ),
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.delete_forever, color: Colors.red),
-                  title: const Text('解散团队', style: TextStyle(color: Colors.red)),
-                  subtitle: const Text('永久删除团队及所有数据'),
+                  title: const Text('Disband the team', style: TextStyle(color: Colors.red)),
+                  subtitle: const Text('Permanently delete the team and all data'),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: _showDisbandDialog,
                 ),
